@@ -48,6 +48,15 @@ class _LoginPageState extends ConsumerState<LoginPage>
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
+    final isLoading = authState.maybeWhen(
+      orElse: () => false,
+      loading: () => true,
+    );
+    final errorMessage = authState.maybeWhen(
+      orElse: () => null,
+      unauthenticated: (msg) => msg,
+    );
+
     // Si el estado cambia a authenticated, preguntar por biometria
     ref.listen(authProvider, (prev, next) {
       final wasAuthenticated = next.maybeWhen(
@@ -61,25 +70,29 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 400),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.school,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.primary,
+                  Image.asset(
+                    'assets/AM_InicioSesion.webp',
+                    height: 180,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.school,
+                      size: 64,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'bitets',
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 32),
                   TabBar(
@@ -90,16 +103,32 @@ class _LoginPageState extends ConsumerState<LoginPage>
                     ],
                   ),
                   const SizedBox(height: 24),
-                  SizedBox(
-                    height: authState.maybeWhen(
-                      orElse: () => 350,
-                      loading: () => 280,
+                  if (errorMessage != null && !isLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          errorMessage,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ),
                     ),
+                  Expanded(
                     child: TabBarView(
                       controller: _tabCtrl,
                       children: const [
-                        LoginForm(),
-                        RegisterForm(),
+                        SingleChildScrollView(child: LoginForm()),
+                        SingleChildScrollView(child: RegisterForm()),
                       ],
                     ),
                   ),

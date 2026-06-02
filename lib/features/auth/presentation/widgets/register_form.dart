@@ -46,32 +46,12 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
 
     final isLoading =
         authState.maybeWhen(orElse: () => false, loading: () => true);
-    final errorMessage = authState.maybeWhen(
-      orElse: () => null,
-      unauthenticated: (msg) => msg,
-    );
 
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (errorMessage != null) ...[
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.errorContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                errorMessage,
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onErrorContainer,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
           TextFormField(
             controller: _nameCtrl,
             keyboardType: TextInputType.name,
