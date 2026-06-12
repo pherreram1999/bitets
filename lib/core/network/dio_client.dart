@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import '../constants/api_constants.dart';
 import 'auth_interceptor.dart';
 
-/// Singleton que provee la instancia de Dio configurada.
 class DioClient {
   DioClient._();
 
@@ -22,22 +21,20 @@ class DioClient {
       ),
     );
 
-    // Log de peticiones solo en debug
     if (kDebugMode) {
       dio.interceptors.add(
-        LogInterceptor(
-          requestBody: true,
-          responseBody: true,
-          error: true,
-        ),
+        LogInterceptor(requestBody: true, responseBody: true, error: true),
       );
     }
 
     return dio;
   }
 
-  /// Registra el interceptor de autenticacion.
-  /// Debe llamarse una vez configurado el callback onUnauthorized.
+  static void updateBaseUrl(String url) {
+    ApiConstants.baseUrl = url;
+    instance.options.baseUrl = url;
+  }
+
   static void addAuthInterceptor(AuthInterceptor interceptor) {
     instance.interceptors.add(interceptor);
   }

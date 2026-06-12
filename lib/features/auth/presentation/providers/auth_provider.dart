@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -11,7 +14,6 @@ import 'auth_state.dart';
 
 part 'auth_provider.g.dart';
 
-/// Provider que gestiona todo el estado de autenticacion.
 @riverpod
 class Auth extends _$Auth {
   late final AuthRepository _repository;
@@ -28,7 +30,37 @@ class Auth extends _$Auth {
     return const AuthState.initial();
   }
 
-  /// Verifica el estado de autenticacion al iniciar la app.
+  Future<String> _getDeviceName() async {
+    try {
+      final deviceInfo = DeviceInfoPlugin();
+      if (kIsWeb) {
+        final web = await deviceInfo.webBrowserInfo;
+        return 'web-${web.browserName.name}';
+      }
+      if (Platform.isAndroid) {
+        final android = await deviceInfo.androidInfo;
+        return '${android.manufacturer}-${android.model}';
+      }
+      if (Platform.isIOS) {
+        final ios = await deviceInfo.iosInfo;
+        return ios.utsname.machine;
+      }
+      if (Platform.isLinux) {
+        final linux = await deviceInfo.linuxInfo;
+        return 'linux-${linux.name}';
+      }
+      if (Platform.isMacOS) {
+        final mac = await deviceInfo.macOsInfo;
+        return 'macos-${mac.model}';
+      }
+      if (Platform.isWindows) {
+        final windows = await deviceInfo.windowsInfo;
+        return 'windows-${windows.computerName}';
+      }
+    } catch (_) {}
+    return 'bitets-app';
+  }
+
   Future<void> checkAuthStatus() async {
     state = const AuthState.loading();
 
@@ -38,21 +70,25 @@ class Auth extends _$Auth {
       return;
     }
 
-    // Verificar si la biometria esta activada
-    final biometricEnabled = await _repository.isBiometricEnabled();
-    if (biometricEnabled) {
-      final authenticated = await _repository.authenticateWithBiometrics();
-      if (!authenticated) {
-        state = const AuthState.unauthenticated();
-        return;
-      }
+    // Token exists. NEVER restore session without validating identity.
+    // Always require unlock (biometric or password) — storedSession UI handles both.
+    final userName = await _repository.getStoredUserName();
+    state = AuthState.storedSession(userName);
+  }
+
+  Future<void> loginWithBiometrics() async {
+    final userName = await _repository.getStoredUserName();
+    state = const AuthState.loading();
+
+    final authenticated = await _repository.authenticateWithBiometrics();
+    if (!authenticated) {
+      state = AuthState.storedSession(userName);
+      return;
     }
 
-    // Cargar token en cache del interceptor
     final token = await _repository.getStoredToken();
     _interceptor.setCachedToken(token ?? '');
 
-    // Validar token contra el servidor
     try {
       final user = await _repository.getCurrentUser();
       state = AuthState.authenticated(user);
@@ -61,19 +97,20 @@ class Auth extends _$Auth {
       _interceptor.clearCachedToken();
       state = const AuthState.unauthenticated();
       if (kDebugMode) {
-        debugPrint('checkAuthStatus error: $e');
+        debugPrint('loginWithBiometrics error: $e');
       }
     }
   }
 
-  /// Inicia sesion con email y password.
-  Future<void> login(String email, String password) async {
+  Future<void> login(String identificador, String password) async {
     state = const AuthState.loading();
 
     try {
+      final deviceName = await _getDeviceName();
       final user = await _repository.login(
-        email: email,
+        identificador: identificador,
         password: password,
+        deviceName: deviceName,
       );
 
       final token = await _repository.getStoredToken();
@@ -81,28 +118,38 @@ class Auth extends _$Auth {
 
       state = AuthState.authenticated(user);
     } on DioException catch (e) {
+      _logDioError('login', e);
       final message = _extractErrorMessage(e);
       state = AuthState.unauthenticated(message);
-    } catch (e) {
-      state = AuthState.unauthenticated('Error de conexion. Intenta de nuevo.');
+    } catch (e, st) {
+      if (kDebugMode) {
+        debugPrint('login error (no-Dio): $e');
+        debugPrint('login stack: $st');
+      }
+      state = AuthState.unauthenticated(
+        'No se pudo completar el inicio de sesion. Intenta de nuevo.',
+      );
     }
   }
 
-  /// Registra un nuevo usuario.
   Future<void> register(
     String name,
     String email,
+    String identificador,
     String password,
     String passwordConfirmation,
   ) async {
     state = const AuthState.loading();
 
     try {
+      final deviceName = await _getDeviceName();
       final user = await _repository.register(
         name: name,
         email: email,
+        identificador: identificador,
         password: password,
         passwordConfirmation: passwordConfirmation,
+        deviceName: deviceName,
       );
 
       final token = await _repository.getStoredToken();
@@ -110,14 +157,20 @@ class Auth extends _$Auth {
 
       state = AuthState.authenticated(user);
     } on DioException catch (e) {
+      _logDioError('register', e);
       final message = _extractErrorMessage(e);
       state = AuthState.unauthenticated(message);
-    } catch (e) {
-      state = AuthState.unauthenticated('Error de conexion. Intenta de nuevo.');
+    } catch (e, st) {
+      if (kDebugMode) {
+        debugPrint('register error (no-Dio): $e');
+        debugPrint('register stack: $st');
+      }
+      state = AuthState.unauthenticated(
+        'No se pudo completar el registro. Intenta de nuevo.',
+      );
     }
   }
 
-  /// Cierra sesion.
   Future<void> logout() async {
     state = const AuthState.loading();
     await _repository.logout();
@@ -125,7 +178,12 @@ class Auth extends _$Auth {
     state = const AuthState.unauthenticated();
   }
 
-  /// Activa el desbloqueo biometrico para futuros inicios de sesion.
+  Future<void> clearStoredSession() async {
+    await _repository.logout();
+    _interceptor.clearCachedToken();
+    state = const AuthState.unauthenticated();
+  }
+
   Future<bool> enableBiometrics() async {
     final authenticated = await _repository.authenticateWithBiometrics();
     if (authenticated) {
@@ -134,19 +192,34 @@ class Auth extends _$Auth {
     return authenticated;
   }
 
-  /// Indica si se debe mostrar el dialogo de configuracion biometrica.
   Future<bool> needsBiometricSetup() async {
+    final canUse = await _repository.canCheckBiometrics();
+    if (!canUse) return false;
     return !(await _repository.isBiometricEnabled());
   }
 
-  /// Callback invocado por el AuthInterceptor cuando recibe un 401.
   void _handleUnauthorized() {
     _repository.logout().then((_) {
       state = const AuthState.unauthenticated();
     });
   }
 
-  /// Extrae un mensaje legible de un DioException.
+  void _logDioError(String tag, DioException e) {
+    if (!kDebugMode) return;
+    debugPrint(
+      '[$tag] DioException type=${e.type} '
+      'status=${e.response?.statusCode} '
+      'message=${e.message}',
+    );
+    final data = e.response?.data;
+    if (data != null) {
+      debugPrint('[$tag] response body: $data');
+    }
+    if (e.requestOptions.data != null) {
+      debugPrint('[$tag] request body: ${e.requestOptions.data}');
+    }
+  }
+
   String _extractErrorMessage(DioException e) {
     final data = e.response?.data;
 

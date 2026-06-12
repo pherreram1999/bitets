@@ -2,12 +2,12 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'user.g.dart';
 
-/// Entidad de dominio que representa un usuario autenticado.
 @JsonSerializable()
 class User {
   final int id;
   final String name;
   final String email;
+  final String? identificador;
   final String rol;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
@@ -18,6 +18,7 @@ class User {
     required this.id,
     required this.name,
     required this.email,
+    this.identificador,
     required this.rol,
     required this.createdAt,
     required this.updatedAt,

@@ -1,12 +1,17 @@
-/// Cuerpo de la peticion POST /auth/login.
 class LoginRequest {
-  final String email;
+  final String identificador;
   final String password;
+  final String deviceName;
 
-  const LoginRequest({required this.email, required this.password});
+  const LoginRequest({
+    required this.identificador,
+    required this.password,
+    required this.deviceName,
+  });
 
   Map<String, dynamic> toJson() => {
-        'email': email,
-        'password': password,
-      };
+    'identificador': identificador,
+    'password': password,
+    'device_name': deviceName,
+  };
 }

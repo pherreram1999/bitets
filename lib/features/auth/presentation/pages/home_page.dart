@@ -1,63 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/auth_provider.dart';
-import '../providers/auth_state.dart';
+import '../../../exams/presentation/pages/exams_page.dart';
+import '../../../catalog/presentation/pages/catalog_page.dart';
+import 'profile_page.dart';
 
-/// Pagina principal mostrada tras la autenticacion exitosa.
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
 
-    final user = authState.maybeWhen(
-      orElse: () => null,
-      authenticated: (u) => u,
-    );
+class _HomePageState extends ConsumerState<HomePage> {
+  int _currentIndex = 0;
 
+  static const List<Widget> _pages = [ExamsPage(), CatalogPage()];
+
+  void _openProfile() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const ProfilePage()));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('bitets'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Cerrar sesion',
-            onPressed: () => ref.read(authProvider.notifier).logout(),
+            icon: const Icon(Icons.account_circle_outlined),
+            tooltip: 'Perfil',
+            onPressed: _openProfile,
           ),
         ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 40,
-                child: Text(
-                  user?.name.isNotEmpty == true
-                      ? user!.name[0].toUpperCase()
-                      : '?',
-                  style: const TextStyle(fontSize: 32),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Bienvenido, ${user?.name ?? "Usuario"}',
-                style: Theme.of(context).textTheme.headlineSmall,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                user?.email ?? '',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-              ),
-            ],
+      body: _pages[_currentIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.assignment_outlined),
+            selectedIcon: Icon(Icons.assignment),
+            label: 'Mis exámenes',
           ),
-        ),
+          NavigationDestination(
+            icon: Icon(Icons.menu_book_outlined),
+            selectedIcon: Icon(Icons.menu_book),
+            label: 'Catálogo',
+          ),
+        ],
       ),
     );
   }

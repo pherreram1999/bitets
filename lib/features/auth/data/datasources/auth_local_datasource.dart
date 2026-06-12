@@ -5,7 +5,7 @@ import '../../domain/entities/user.dart';
 /// del token, datos de usuario y preferencias biometricas.
 class AuthLocalDatasource {
   AuthLocalDatasource({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+    : _storage = storage ?? const FlutterSecureStorage();
 
   final FlutterSecureStorage _storage;
 

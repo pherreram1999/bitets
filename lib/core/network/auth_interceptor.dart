@@ -4,10 +4,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// Interceptor que inyecta el Bearer token en cada peticion
 /// y redirige al login cuando recibe un 401.
 class AuthInterceptor extends Interceptor {
-  AuthInterceptor({
-    required this.onUnauthorized,
-    FlutterSecureStorage? storage,
-  }) : _storage = storage ?? const FlutterSecureStorage();
+  AuthInterceptor({required this.onUnauthorized, FlutterSecureStorage? storage})
+    : _storage = storage ?? const FlutterSecureStorage();
 
   final FlutterSecureStorage _storage;
   final VoidCallback onUnauthorized;

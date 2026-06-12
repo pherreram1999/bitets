@@ -4,9 +4,7 @@ import '../providers/auth_provider.dart';
 import '../providers/auth_state.dart';
 import '../widgets/login_form.dart';
 import '../widgets/register_form.dart';
-import '../widgets/biometric_setup_dialog.dart';
 
-/// Pagina de autenticacion con tabs para login y registro.
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
@@ -30,20 +28,6 @@ class _LoginPageState extends ConsumerState<LoginPage>
     super.dispose();
   }
 
-  void _maybeShowBiometricDialog() {
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final authNotifier = ref.read(authProvider.notifier);
-      final needsSetup = await authNotifier.needsBiometricSetup();
-
-      if (needsSetup && mounted) {
-        final activate = await BiometricSetupDialog.show(context);
-        if (activate == true && mounted) {
-          await authNotifier.enableBiometrics();
-        }
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -57,14 +41,13 @@ class _LoginPageState extends ConsumerState<LoginPage>
       unauthenticated: (msg) => msg,
     );
 
-    // Si el estado cambia a authenticated, preguntar por biometria
     ref.listen(authProvider, (prev, next) {
       final wasAuthenticated = next.maybeWhen(
         orElse: () => false,
         authenticated: (_) => true,
       );
-      if (wasAuthenticated) {
-        _maybeShowBiometricDialog();
+      if (wasAuthenticated && mounted) {
+        _maybeAutoEnableBiometrics();
       }
     });
 
@@ -81,7 +64,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                     'assets/AM_InicioSesion.webp',
                     height: 180,
                     fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => Icon(
+                    errorBuilder: (context, error, _) => Icon(
                       Icons.school,
                       size: 64,
                       color: Theme.of(context).colorScheme.primary,
@@ -139,5 +122,16 @@ class _LoginPageState extends ConsumerState<LoginPage>
         ),
       ),
     );
+  }
+
+  void _maybeAutoEnableBiometrics() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final notifier = ref.read(authProvider.notifier);
+      final needsSetup = await notifier.needsBiometricSetup();
+      if (needsSetup && mounted) {
+        await notifier.enableBiometrics();
+      }
+    });
   }
 }

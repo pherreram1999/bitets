@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../providers/auth_state.dart';
 
-/// Formulario de inicio de sesion con email y password.
 class LoginForm extends ConsumerStatefulWidget {
   const LoginForm({super.key});
 
@@ -13,13 +12,13 @@ class LoginForm extends ConsumerStatefulWidget {
 
 class _LoginFormState extends ConsumerState<LoginForm> {
   final _formKey = GlobalKey<FormState>();
-  final _emailCtrl = TextEditingController();
+  final _boletaCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    _emailCtrl.dispose();
+    _boletaCtrl.dispose();
     _passwordCtrl.dispose();
     super.dispose();
   }
@@ -27,18 +26,19 @@ class _LoginFormState extends ConsumerState<LoginForm> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    await ref.read(authProvider.notifier).login(
-          _emailCtrl.text.trim(),
-          _passwordCtrl.text,
-        );
+    await ref
+        .read(authProvider.notifier)
+        .login(_boletaCtrl.text.trim(), _passwordCtrl.text);
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    final isLoading =
-        authState.maybeWhen(orElse: () => false, loading: () => true);
+    final isLoading = authState.maybeWhen(
+      orElse: () => false,
+      loading: () => true,
+    );
 
     return Form(
       key: _formKey,
@@ -46,20 +46,17 @@ class _LoginFormState extends ConsumerState<LoginForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextFormField(
-            controller: _emailCtrl,
-            keyboardType: TextInputType.emailAddress,
+            controller: _boletaCtrl,
+            keyboardType: TextInputType.text,
             textInputAction: TextInputAction.next,
             decoration: const InputDecoration(
-              labelText: 'Correo electronico',
-              prefixIcon: Icon(Icons.email_outlined),
+              labelText: 'Boleta',
+              prefixIcon: Icon(Icons.badge_outlined),
               border: OutlineInputBorder(),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Ingresa tu correo';
-              }
-              if (!value.contains('@')) {
-                return 'Ingresa un correo valido';
+                return 'Ingresa tu boleta';
               }
               return null;
             },

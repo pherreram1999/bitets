@@ -8,14 +8,11 @@ part of 'auth_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Provider que gestiona todo el estado de autenticacion.
 
 @ProviderFor(Auth)
 final authProvider = AuthProvider._();
 
-/// Provider que gestiona todo el estado de autenticacion.
 final class AuthProvider extends $NotifierProvider<Auth, AuthState> {
-  /// Provider que gestiona todo el estado de autenticacion.
   AuthProvider._()
     : super(
         from: null,
@@ -43,9 +40,7 @@ final class AuthProvider extends $NotifierProvider<Auth, AuthState> {
   }
 }
 
-String _$authHash() => r'3c14ae82974fbaa23a78a4a48907aecbc2ea6020';
-
-/// Provider que gestiona todo el estado de autenticacion.
+String _$authHash() => r'421a7c0cfb9cc14a46876d04e55f950e8947a982';
 
 abstract class _$Auth extends $Notifier<AuthState> {
   AuthState build();

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../providers/auth_state.dart';
 
-/// Formulario de registro de nuevo usuario.
 class RegisterForm extends ConsumerStatefulWidget {
   const RegisterForm({super.key});
 
@@ -15,6 +14,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
+  final _boletaCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
   bool _obscurePassword = true;
@@ -24,6 +24,7 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
   void dispose() {
     _nameCtrl.dispose();
     _emailCtrl.dispose();
+    _boletaCtrl.dispose();
     _passwordCtrl.dispose();
     _confirmCtrl.dispose();
     super.dispose();
@@ -32,9 +33,12 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    await ref.read(authProvider.notifier).register(
+    await ref
+        .read(authProvider.notifier)
+        .register(
           _nameCtrl.text.trim(),
           _emailCtrl.text.trim(),
+          _boletaCtrl.text.trim(),
           _passwordCtrl.text,
           _confirmCtrl.text,
         );
@@ -44,8 +48,10 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
 
-    final isLoading =
-        authState.maybeWhen(orElse: () => false, loading: () => true);
+    final isLoading = authState.maybeWhen(
+      orElse: () => false,
+      loading: () => true,
+    );
 
     return Form(
       key: _formKey,
@@ -85,6 +91,23 @@ class _RegisterFormState extends ConsumerState<RegisterForm> {
               }
               if (!value.contains('@')) {
                 return 'Ingresa un correo valido';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _boletaCtrl,
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+            decoration: const InputDecoration(
+              labelText: 'Boleta',
+              prefixIcon: Icon(Icons.badge_outlined),
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Ingresa tu boleta';
               }
               return null;
             },
