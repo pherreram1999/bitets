@@ -4,58 +4,52 @@ import '../../../grid/domain/entities/grid_action.dart';
 import '../../../grid/domain/entities/laravel_resource_controller.dart';
 import '../../../grid/domain/entities/paginated_result.dart';
 import '../../../grid/domain/repositories/grid_repository.dart';
-import '../../../grid/presentation/actions/create_action.dart';
-import '../../../grid/presentation/actions/delete_action.dart';
-import '../../../grid/presentation/actions/edit_action.dart';
-import '../../../grid/presentation/actions/view_action.dart';
 import '../../../grid/presentation/pages/grid_page.dart';
 import '../../../grid/presentation/pages/grid_search.dart';
 import '../../../grid/presentation/pages/grid_search_state.dart';
-import '../../../profesores/presentation/providers/profesores_providers.dart';
-import '../../../salon/presentation/providers/salon_providers.dart';
-import '../../../unidad_aprendizaje/presentation/providers/unidad_aprendizaje_providers.dart';
-import '../../data/repositories/examen_repository.dart';
+import '../../data/repositories/alumno_examen_repository.dart';
 import '../../domain/entities/examen.dart';
-import '../actions/toggle_active_examen_action.dart';
-import '../forms/examen_form.dart';
+import '../actions/add_to_calendar_examen_action.dart';
+import '../actions/unenroll_examen_action.dart';
+import '../actions/view_examen_details_action.dart';
 import '../forms/examenes_search.dart';
 import '../providers/examen_providers.dart';
-import 'alumno_examenes_grid_page.dart' show ExamenStatusChip;
+import '../widgets/calendar_export_buttons.dart';
 
-class ExamenesGridPage extends GridPage<Examen> {
-  const ExamenesGridPage({super.key});
-
-  @override
-  String get title => 'Examenes';
+class AlumnoExamenesGridPage extends GridPage<Examen> {
+  const AlumnoExamenesGridPage({super.key});
 
   @override
-  GridRepository<Examen> get repository => ExamenRepository();
+  String get title => 'Mis examenes';
+
+  @override
+  GridRepository<Examen> get repository => AlumnoExamenRepository();
 
   @override
   LaravelResourceController get controller =>
-      const LaravelResourceController('/examenes');
+      const LaravelResourceController('/mis-examenes');
 
   @override
   List<GridAction<Examen>> get actions => const [
-    CreateAction<Examen>(),
-    ViewAction<Examen>(),
-    EditAction<Examen>(),
-    ToggleActiveExamenAction(),
-    DeleteAction<Examen>(),
+    ViewExamenDetailsAction(),
+    AddToCalendarExamenAction(),
+    UnenrollExamenAction(),
   ];
 
   @override
   GridFormBuilder<Examen> get formBuilder =>
       ({required String endpoint, Examen? item, bool readOnly = false}) =>
-          ExamenForm(endpoint: endpoint, item: item, readOnly: readOnly);
+          throw UnimplementedError(
+            'AlumnoExamenesGridPage does not support forms.',
+          );
 
   @override
   Map<String, dynamic> currentFilters(WidgetRef ref) =>
-      ref.watch(examenesFiltersProvider);
+      ref.watch(alumnoExamenesFiltersProvider);
 
   @override
   void updateFilters(WidgetRef ref, Map<String, dynamic> filters) {
-    ref.read(examenesFiltersProvider.notifier).apply(filters);
+    ref.read(alumnoExamenesFiltersProvider.notifier).apply(filters);
   }
 
   @override
@@ -67,21 +61,24 @@ class ExamenesGridPage extends GridPage<Examen> {
 
   @override
   AsyncValue<PaginatedResult<Examen>> watchGrid(WidgetRef ref, int page) =>
-      ref.watch(examenesGridProvider(page));
+      ref.watch(alumnoExamenesGridProvider(page));
 
   @override
   void onActionCompleted(WidgetRef ref) {
-    ref.invalidate(examenesGridProvider);
-    ref.invalidate(unidadesAprendizajeListProvider);
-    ref.invalidate(profesoresListProvider);
-    ref.invalidate(salonesListProvider);
+    ref.invalidate(alumnoExamenesGridProvider);
+    ref.invalidate(enrolledExamenIdsProvider);
   }
 
   @override
   Future<void> refresh(WidgetRef ref, int page) async {
-    ref.invalidate(examenesGridProvider);
-    await ref.read(examenesGridProvider(page).future);
+    ref.invalidate(alumnoExamenesGridProvider);
+    ref.invalidate(enrolledExamenIdsProvider);
+    await ref.read(alumnoExamenesGridProvider(page).future);
   }
+
+  @override
+  List<Widget> extraAppBarActions(BuildContext context, WidgetRef ref) =>
+      const [CalendarExportButtons()];
 
   @override
   Widget buildCardBody(BuildContext context, Examen item) {
@@ -163,5 +160,33 @@ class ExamenesGridPage extends GridPage<Examen> {
     final hh = dt.hour.toString().padLeft(2, '0');
     final mm = dt.minute.toString().padLeft(2, '0');
     return '$y-$m-$d $hh:$mm';
+  }
+}
+
+class ExamenStatusChip extends StatelessWidget {
+  const ExamenStatusChip({super.key, required this.active});
+
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final bg = active
+        ? colorScheme.primaryContainer
+        : colorScheme.errorContainer;
+    final fg = active
+        ? colorScheme.onPrimaryContainer
+        : colorScheme.onErrorContainer;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        active ? 'Activo' : 'Inactivo',
+        style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w600),
+      ),
+    );
   }
 }

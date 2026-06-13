@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../grid/presentation/pages/grid_search.dart';
 import '../../../grid/presentation/pages/grid_search_state.dart';
-import '../../../profesores/presentation/providers/profesores_providers.dart';
-import '../../../salon/presentation/providers/salon_providers.dart';
-import '../../../unidad_aprendizaje/presentation/providers/unidad_aprendizaje_providers.dart';
+import '../../../profesores/presentation/forms/profesores_async_search.dart';
+import '../../../salon/presentation/forms/salones_async_search.dart';
+import '../../../unidad_aprendizaje/presentation/forms/unidades_aprendizaje_async_search.dart';
 import '../../domain/entities/examen.dart';
+import '../widgets/async_picker_field.dart';
 
 class ExamenesSearch extends GridSearch<Examen> {
   const ExamenesSearch({super.key, super.initialValues});
@@ -21,9 +22,17 @@ class _ExamenesSearchState extends GridSearchState<Examen> {
   final _descripcionController = TextEditingController();
   DateTime? _horarioDesde;
   DateTime? _horarioHasta;
+
   int? _unidadAprendizajeId;
+  String? _unidadAprendizajeNombre;
+  int? _unidadAprendizajeCarreraId;
+  int? _unidadAprendizajePlanEstudioId;
+
   int? _profesorId;
+  String? _profesorNombre;
+
   int? _salonId;
+  String? _salonNombre;
 
   @override
   void hydrate(Map<String, dynamic>? values) {
@@ -55,16 +64,74 @@ class _ExamenesSearchState extends GridSearchState<Examen> {
       _horarioDesde = null;
       _horarioHasta = null;
       _unidadAprendizajeId = null;
+      _unidadAprendizajeNombre = null;
+      _unidadAprendizajeCarreraId = null;
+      _unidadAprendizajePlanEstudioId = null;
       _profesorId = null;
+      _profesorNombre = null;
       _salonId = null;
+      _salonNombre = null;
+    });
+  }
+
+  Future<void> _pickUnidad() async {
+    final selected = await UnidadesAprendizajeAsyncSearchModal.show(
+      context,
+      initialCarreraId: _unidadAprendizajeCarreraId,
+      initialPlanEstudioId: _unidadAprendizajePlanEstudioId,
+    );
+    if (selected == null || !mounted) return;
+    setState(() {
+      _unidadAprendizajeId = int.parse(selected.id);
+      _unidadAprendizajeNombre = selected.nombre;
+      _unidadAprendizajeCarreraId = selected.carreraId;
+      _unidadAprendizajePlanEstudioId = selected.planEstudioId;
+    });
+  }
+
+  void _clearUnidad() {
+    setState(() {
+      _unidadAprendizajeId = null;
+      _unidadAprendizajeNombre = null;
+      _unidadAprendizajeCarreraId = null;
+      _unidadAprendizajePlanEstudioId = null;
+    });
+  }
+
+  Future<void> _pickProfesor() async {
+    final selected = await ProfesoresAsyncSearchModal.show(context);
+    if (selected == null || !mounted) return;
+    setState(() {
+      _profesorId = int.parse(selected.id);
+      _profesorNombre = selected.nombre;
+    });
+  }
+
+  void _clearProfesor() {
+    setState(() {
+      _profesorId = null;
+      _profesorNombre = null;
+    });
+  }
+
+  Future<void> _pickSalon() async {
+    final selected = await SalonesAsyncSearchModal.show(context);
+    if (selected == null || !mounted) return;
+    setState(() {
+      _salonId = int.parse(selected.id);
+      _salonNombre = selected.nombre;
+    });
+  }
+
+  void _clearSalon() {
+    setState(() {
+      _salonId = null;
+      _salonNombre = null;
     });
   }
 
   @override
   Widget buildSearchFields(BuildContext context) {
-    final unidadesAsync = ref.watch(unidadesAprendizajeListProvider);
-    final profesoresAsync = ref.watch(profesoresListProvider);
-    final salonesAsync = ref.watch(salonesListProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -91,70 +158,31 @@ class _ExamenesSearchState extends GridSearchState<Examen> {
           onChanged: (v) => setState(() => _horarioHasta = v),
         ),
         const SizedBox(height: 12),
-        unidadesAsync.when(
-          loading: () => const LinearProgressIndicator(),
-          error: (Object e, _) => Text('Error al cargar unidades: $e'),
-          data: (unidades) => DropdownButtonFormField<int>(
-            initialValue: _unidadAprendizajeId,
-            decoration: const InputDecoration(
-              labelText: 'Unidad de aprendizaje',
-              border: OutlineInputBorder(),
-            ),
-            items: [
-              const DropdownMenuItem<int>(value: null, child: Text('Todas')),
-              ...unidades.map(
-                (u) => DropdownMenuItem<int>(
-                  value: int.parse(u.id),
-                  child: Text(u.nombre),
-                ),
-              ),
-            ],
-            onChanged: (value) => setState(() => _unidadAprendizajeId = value),
-          ),
+        AsyncPickerField(
+          label: 'Unidad de aprendizaje',
+          icon: Icons.school_outlined,
+          value: _unidadAprendizajeNombre,
+          enabled: true,
+          onTap: _pickUnidad,
+          onClear: _unidadAprendizajeId == null ? null : _clearUnidad,
         ),
         const SizedBox(height: 12),
-        profesoresAsync.when(
-          loading: () => const LinearProgressIndicator(),
-          error: (Object e, _) => Text('Error al cargar profesores: $e'),
-          data: (profesores) => DropdownButtonFormField<int>(
-            initialValue: _profesorId,
-            decoration: const InputDecoration(
-              labelText: 'Profesor',
-              border: OutlineInputBorder(),
-            ),
-            items: [
-              const DropdownMenuItem<int>(value: null, child: Text('Todos')),
-              ...profesores.map(
-                (p) => DropdownMenuItem<int>(
-                  value: int.parse(p.id),
-                  child: Text(p.nombre),
-                ),
-              ),
-            ],
-            onChanged: (value) => setState(() => _profesorId = value),
-          ),
+        AsyncPickerField(
+          label: 'Profesor',
+          icon: Icons.person_outline,
+          value: _profesorNombre,
+          enabled: true,
+          onTap: _pickProfesor,
+          onClear: _profesorId == null ? null : _clearProfesor,
         ),
         const SizedBox(height: 12),
-        salonesAsync.when(
-          loading: () => const LinearProgressIndicator(),
-          error: (Object e, _) => Text('Error al cargar salones: $e'),
-          data: (salones) => DropdownButtonFormField<int>(
-            initialValue: _salonId,
-            decoration: const InputDecoration(
-              labelText: 'Salon',
-              border: OutlineInputBorder(),
-            ),
-            items: [
-              const DropdownMenuItem<int>(value: null, child: Text('Todos')),
-              ...salones.map(
-                (s) => DropdownMenuItem<int>(
-                  value: int.parse(s.id),
-                  child: Text(s.nombre),
-                ),
-              ),
-            ],
-            onChanged: (value) => setState(() => _salonId = value),
-          ),
+        AsyncPickerField(
+          label: 'Salon',
+          icon: Icons.meeting_room_outlined,
+          value: _salonNombre,
+          enabled: true,
+          onTap: _pickSalon,
+          onClear: _salonId == null ? null : _clearSalon,
         ),
       ],
     );

@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/providers/auth_state.dart';
-import '../../../edificio/domain/entities/edificio.dart';
-import '../../../edificio/presentation/providers/edificio_providers.dart';
+import '../../../edificio/presentation/forms/edificios_async_search.dart';
 import '../../../grid/presentation/forms/grid_form.dart';
 import '../../../grid/presentation/forms/grid_form_state.dart';
-import '../../../profesores/domain/entities/profesor.dart';
 import '../../../profesores/presentation/forms/profesores_async_search.dart';
+import '../../../profesores/domain/entities/profesor.dart';
 import '../../../profesores/presentation/providers/profesores_providers.dart';
 import '../../../salon/domain/entities/salon.dart';
 import '../../../salon/presentation/providers/salon_providers.dart';
@@ -15,6 +14,7 @@ import '../../../unidad_aprendizaje/domain/entities/unidad_aprendizaje.dart';
 import '../../../unidad_aprendizaje/presentation/forms/unidades_aprendizaje_async_search.dart';
 import '../../../unidad_aprendizaje/presentation/providers/unidad_aprendizaje_providers.dart';
 import '../../domain/entities/examen.dart';
+import '../widgets/async_picker_field.dart';
 
 class ExamenForm extends GridForm<Examen> {
   const ExamenForm({
@@ -34,6 +34,7 @@ class _ExamenFormState extends GridFormState<Examen> {
   int? _userId;
 
   int? _edificioId;
+  String? _edificioNombre;
   int? _salonId;
 
   int? _unidadAprendizajeId;
@@ -46,8 +47,9 @@ class _ExamenFormState extends GridFormState<Examen> {
   String? _profesorNombre;
 
   @override
-  String get formTitle =>
-      widget.item == null ? 'Nuevo examen' : 'Editar examen';
+  String get formTitle => widget.item == null
+      ? 'Nuevo examen'
+      : (widget.readOnly ? 'Detalle del examen' : 'Editar examen');
 
   @override
   void initState() {
@@ -76,6 +78,7 @@ class _ExamenFormState extends GridFormState<Examen> {
 
       _profesorNombre = item.profesor?.nombre;
       _edificioId = item.salon?.edificioId;
+      _edificioNombre = item.salon?.edificio?.nombre;
     } else {
       final auth = ref.read(authProvider);
       _userId = auth.maybeWhen(orElse: () => null, authenticated: (u) => u.id);
@@ -127,6 +130,26 @@ class _ExamenFormState extends GridFormState<Examen> {
     });
   }
 
+  Future<void> _pickEdificio() async {
+    final selected = await EdificiosAsyncSearchModal.show(context);
+    if (selected == null || !mounted) return;
+    final newId = int.parse(selected.id);
+    if (newId == _edificioId) return;
+    setState(() {
+      _edificioId = newId;
+      _edificioNombre = selected.nombre;
+      _salonId = null;
+    });
+  }
+
+  void _clearEdificio() {
+    setState(() {
+      _edificioId = null;
+      _edificioNombre = null;
+      _salonId = null;
+    });
+  }
+
   Future<void> _pickUnidad() async {
     final selected = await UnidadesAprendizajeAsyncSearchModal.show(
       context,
@@ -154,7 +177,6 @@ class _ExamenFormState extends GridFormState<Examen> {
 
   @override
   Widget buildFormFields(BuildContext context, Examen? item) {
-    final edificiosAsync = ref.watch(edificiosListProvider);
     final salonesAsync = ref.watch(salonesByEdificioProvider(_edificioId ?? 0));
 
     return Column(
@@ -176,35 +198,18 @@ class _ExamenFormState extends GridFormState<Examen> {
           onChanged: (value) => setState(() => _horario = value),
         ),
         const SizedBox(height: 16),
-        edificiosAsync.when(
-          loading: () => const LinearProgressIndicator(),
-          error: (Object e, _) => Text('Error al cargar edificios: $e'),
-          data: (edificios) => DropdownButtonFormField<int>(
-            initialValue: _edificioId,
-            decoration: const InputDecoration(
-              labelText: 'Edificio',
-              border: OutlineInputBorder(),
-            ),
-            items: edificios
-                .map(
-                  (Edificio e) => DropdownMenuItem<int>(
-                    value: int.parse(e.id),
-                    child: Text(e.nombre),
-                  ),
-                )
-                .toList(),
-            onChanged: widget.readOnly
-                ? null
-                : (value) => setState(() {
-                    _edificioId = value;
-                    _salonId = null;
-                  }),
-          ),
+        AsyncPickerField(
+          label: 'Edificio',
+          icon: Icons.apartment_outlined,
+          value: _edificioNombre,
+          enabled: !widget.readOnly,
+          onTap: _pickEdificio,
+          onClear: _clearEdificio,
         ),
         const SizedBox(height: 16),
         _salonesField(context, salonesAsync),
         const SizedBox(height: 16),
-        _SearchField(
+        AsyncPickerField(
           label: 'Unidad de aprendizaje',
           icon: Icons.school_outlined,
           value: _unidadAprendizajeNombre,
@@ -222,7 +227,7 @@ class _ExamenFormState extends GridFormState<Examen> {
             ),
           ),
         const SizedBox(height: 16),
-        _SearchField(
+        AsyncPickerField(
           label: 'Profesor',
           icon: Icons.person_outline,
           value: _profesorNombre,
@@ -314,53 +319,6 @@ class _ExamenFormState extends GridFormState<Examen> {
   void dispose() {
     _descripcionController.dispose();
     super.dispose();
-  }
-}
-
-class _SearchField extends StatelessWidget {
-  const _SearchField({
-    required this.label,
-    required this.icon,
-    required this.value,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final String? value;
-  final bool enabled;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final hasValue = value != null && value!.isNotEmpty;
-    return InkWell(
-      onTap: enabled ? onTap : null,
-      borderRadius: BorderRadius.circular(4),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
-          prefixIcon: Icon(icon),
-          suffixIcon: enabled
-              ? Icon(
-                  hasValue ? Icons.edit_outlined : Icons.search,
-                  color: colorScheme.onSurfaceVariant,
-                )
-              : null,
-        ),
-        child: Text(
-          hasValue ? value! : 'Tocar para buscar...',
-          style: TextStyle(
-            color: hasValue
-                ? colorScheme.onSurface
-                : colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ),
-    );
   }
 }
 

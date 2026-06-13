@@ -98,6 +98,95 @@ abstract class _$SalonesByEdificio extends $AsyncNotifier<List<Salon>> {
   }
 }
 
+@ProviderFor(SalonesDataset)
+final salonesDatasetProvider = SalonesDatasetFamily._();
+
+final class SalonesDatasetProvider
+    extends $AsyncNotifierProvider<SalonesDataset, List<Salon>> {
+  SalonesDatasetProvider._({
+    required SalonesDatasetFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'salonesDatasetProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$salonesDatasetHash();
+
+  @override
+  String toString() {
+    return r'salonesDatasetProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  SalonesDataset create() => SalonesDataset();
+
+  @override
+  bool operator ==(Object other) {
+    return other is SalonesDatasetProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$salonesDatasetHash() => r'130cf4c8057592c9813b6fe180c808188ca0fa29';
+
+final class SalonesDatasetFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          SalonesDataset,
+          AsyncValue<List<Salon>>,
+          List<Salon>,
+          FutureOr<List<Salon>>,
+          String
+        > {
+  SalonesDatasetFamily._()
+    : super(
+        retry: null,
+        name: r'salonesDatasetProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  SalonesDatasetProvider call(String query) =>
+      SalonesDatasetProvider._(argument: query, from: this);
+
+  @override
+  String toString() => r'salonesDatasetProvider';
+}
+
+abstract class _$SalonesDataset extends $AsyncNotifier<List<Salon>> {
+  late final _$args = ref.$arg as String;
+  String get query => _$args;
+
+  FutureOr<List<Salon>> build(String query);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<List<Salon>>, List<Salon>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<List<Salon>>, List<Salon>>,
+              AsyncValue<List<Salon>>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
 @ProviderFor(SalonesGrid)
 final salonesGridProvider = SalonesGridFamily._();
 

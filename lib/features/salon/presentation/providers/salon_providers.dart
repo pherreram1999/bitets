@@ -28,6 +28,23 @@ class SalonesByEdificio extends _$SalonesByEdificio {
 }
 
 @riverpod
+class SalonesDataset extends _$SalonesDataset {
+  @override
+  Future<List<Salon>> build(String query) async {
+    final trimmed = query.trim();
+    final params = <String, dynamic>{
+      'per_page': 15,
+      'sort': 'nombre',
+      if (trimmed.isNotEmpty) 'nombre': trimmed,
+    };
+    final result = await ref
+        .read(salonRepositoryProvider)
+        .fetchPage(1, query: params);
+    return result.items;
+  }
+}
+
+@riverpod
 class SalonesGrid extends _$SalonesGrid {
   @override
   Future<PaginatedResult<Salon>> build(int page) {

@@ -31,6 +31,9 @@ abstract class GridPage<T extends HasId> extends ConsumerStatefulWidget {
   Future<void> refresh(WidgetRef ref, int page);
   Widget buildCardBody(BuildContext context, T item);
 
+  List<Widget> extraAppBarActions(BuildContext context, WidgetRef ref) =>
+      const <Widget>[];
+
   @override
   ConsumerState<GridPage<T>> createState() => GridState<T>();
 }

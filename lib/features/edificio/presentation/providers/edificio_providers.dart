@@ -16,6 +16,23 @@ final edificiosListProvider = FutureProvider<List<Edificio>>(
 );
 
 @riverpod
+class EdificiosDataset extends _$EdificiosDataset {
+  @override
+  Future<List<Edificio>> build(String query) async {
+    final trimmed = query.trim();
+    final params = <String, dynamic>{
+      'per_page': 15,
+      'sort': 'nombre',
+      if (trimmed.isNotEmpty) 'nombre': trimmed,
+    };
+    final result = await ref
+        .read(edificioRepositoryProvider)
+        .fetchPage(1, query: params);
+    return result.items;
+  }
+}
+
+@riverpod
 class EdificiosGrid extends _$EdificiosGrid {
   @override
   Future<PaginatedResult<Edificio>> build(int page) {

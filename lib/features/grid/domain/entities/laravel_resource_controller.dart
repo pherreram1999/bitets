@@ -27,4 +27,5 @@ class LaravelResourceController {
   String create() => basePath;
   String update(String id) => '$basePath/$id';
   String delete(String id) => '$basePath/$id';
+  String attach(String id) => '$basePath/$id';
 }

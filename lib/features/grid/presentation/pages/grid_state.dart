@@ -21,10 +21,11 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
     );
   }
 
-  List<GridAction<T>> _visibleActions(WidgetRef ref) {
+  List<GridAction<T>> _visibleActions(WidgetRef ref, T item) {
     final admin = _isAdmin(ref);
     return widget.actions
         .where((a) => !a.requiresAdmin || admin)
+        .where((a) => a.isVisibleForItem(ref, item))
         .toList(growable: false);
   }
 
@@ -122,6 +123,7 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
         title: Text(widget.title),
         actions: [
           ?_buildSearchAction(),
+          ...widget.extraAppBarActions(context, ref),
           if (hasCreate)
             IconButton(
               icon: const Icon(Icons.add),
@@ -183,7 +185,7 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
                                       onSelected: (GridAction<T> action) =>
                                           _runAction(action, item),
                                       itemBuilder: (context) =>
-                                          _visibleActions(ref)
+                                          _visibleActions(ref, item)
                                               .map(
                                                 (GridAction<T> a) =>
                                                     PopupMenuItem<

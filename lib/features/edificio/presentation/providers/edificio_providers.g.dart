@@ -9,6 +9,95 @@ part of 'edificio_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(EdificiosDataset)
+final edificiosDatasetProvider = EdificiosDatasetFamily._();
+
+final class EdificiosDatasetProvider
+    extends $AsyncNotifierProvider<EdificiosDataset, List<Edificio>> {
+  EdificiosDatasetProvider._({
+    required EdificiosDatasetFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'edificiosDatasetProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$edificiosDatasetHash();
+
+  @override
+  String toString() {
+    return r'edificiosDatasetProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  EdificiosDataset create() => EdificiosDataset();
+
+  @override
+  bool operator ==(Object other) {
+    return other is EdificiosDatasetProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$edificiosDatasetHash() => r'c1787bb121072d6e71cac3658673ad7e5fd7b94f';
+
+final class EdificiosDatasetFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          EdificiosDataset,
+          AsyncValue<List<Edificio>>,
+          List<Edificio>,
+          FutureOr<List<Edificio>>,
+          String
+        > {
+  EdificiosDatasetFamily._()
+    : super(
+        retry: null,
+        name: r'edificiosDatasetProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  EdificiosDatasetProvider call(String query) =>
+      EdificiosDatasetProvider._(argument: query, from: this);
+
+  @override
+  String toString() => r'edificiosDatasetProvider';
+}
+
+abstract class _$EdificiosDataset extends $AsyncNotifier<List<Edificio>> {
+  late final _$args = ref.$arg as String;
+  String get query => _$args;
+
+  FutureOr<List<Edificio>> build(String query);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<List<Edificio>>, List<Edificio>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<List<Edificio>>, List<Edificio>>,
+              AsyncValue<List<Edificio>>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
 @ProviderFor(EdificiosGrid)
 final edificiosGridProvider = EdificiosGridFamily._();
 
