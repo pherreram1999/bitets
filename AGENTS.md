@@ -57,7 +57,7 @@ When adding a new HTTP client feature, depend on the same `DioClient.instance` a
 
 - Spanish for user-facing strings and `debugPrint` messages; English for code, identifiers, and doc comments. Match the existing files.
 - Do **not** add code comments. The system instruction for this project is "DO NOT ADD ANY COMMENTS unless asked."
-- Prefer `ColorScheme.fromSeed` with the existing `Colors.deepPurple` seed unless the task is to rebrand.
+- Prefer `ColorScheme.fromSeed` with the existing `#D96704` seed unless the task is to rebrand.
 - `custom_lint` + `riverpod_lint` are enabled (`analysis_options.yaml`); `flutter analyze` will flag deprecated Riverpod APIs (`ref.watch` on providers, manual `StateProvider`, etc.) — use the code-gen forms.
 
 ## Recommended order before declaring done

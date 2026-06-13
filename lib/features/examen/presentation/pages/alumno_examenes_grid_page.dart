@@ -9,6 +9,7 @@ import '../../../grid/presentation/pages/grid_search.dart';
 import '../../../grid/presentation/pages/grid_search_state.dart';
 import '../../data/repositories/alumno_examen_repository.dart';
 import '../../domain/entities/examen.dart';
+import '../actions/add_reminder_examen_action.dart';
 import '../actions/add_to_calendar_examen_action.dart';
 import '../actions/unenroll_examen_action.dart';
 import '../actions/view_examen_details_action.dart';
@@ -33,6 +34,7 @@ class AlumnoExamenesGridPage extends GridPage<Examen> {
   List<GridAction<Examen>> get actions => const [
     ViewExamenDetailsAction(),
     AddToCalendarExamenAction(),
+    AddReminderAction(),
     UnenrollExamenAction(),
   ];
 

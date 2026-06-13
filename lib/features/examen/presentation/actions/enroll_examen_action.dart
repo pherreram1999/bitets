@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/network/dio_client.dart';
@@ -39,6 +40,20 @@ class EnrollExamenAction extends GridAction<Examen> {
   ) async {
     if (item == null) {
       throw ArgumentError('EnrollExamenAction requires a non-null item.');
+    }
+    final results = await Connectivity().checkConnectivity();
+    final isOnline = !results.contains(ConnectivityResult.none);
+    if (!isOnline) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Necesitas conexion a internet para inscribirte a un examen.',
+            ),
+          ),
+        );
+      }
+      return false;
     }
     final dio = DioClient.instance;
     await dio.post('/mis-examenes/${item.id}');

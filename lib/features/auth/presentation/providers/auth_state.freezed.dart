@@ -131,14 +131,14 @@ return storedSession(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( User user)?  authenticated,TResult Function( String? message)?  unauthenticated,TResult Function( String? userName)?  storedSession,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( User user)?  authenticated,TResult Function( String? message)?  unauthenticated,TResult Function( String? userName,  String? message)?  storedSession,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Authenticated() when authenticated != null:
 return authenticated(_that.user);case _Unauthenticated() when unauthenticated != null:
 return unauthenticated(_that.message);case _StoredSession() when storedSession != null:
-return storedSession(_that.userName);case _:
+return storedSession(_that.userName,_that.message);case _:
   return orElse();
 
 }
@@ -156,14 +156,14 @@ return storedSession(_that.userName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( User user)  authenticated,required TResult Function( String? message)  unauthenticated,required TResult Function( String? userName)  storedSession,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( User user)  authenticated,required TResult Function( String? message)  unauthenticated,required TResult Function( String? userName,  String? message)  storedSession,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Authenticated():
 return authenticated(_that.user);case _Unauthenticated():
 return unauthenticated(_that.message);case _StoredSession():
-return storedSession(_that.userName);case _:
+return storedSession(_that.userName,_that.message);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -180,14 +180,14 @@ return storedSession(_that.userName);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( User user)?  authenticated,TResult? Function( String? message)?  unauthenticated,TResult? Function( String? userName)?  storedSession,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( User user)?  authenticated,TResult? Function( String? message)?  unauthenticated,TResult? Function( String? userName,  String? message)?  storedSession,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Authenticated() when authenticated != null:
 return authenticated(_that.user);case _Unauthenticated() when unauthenticated != null:
 return unauthenticated(_that.message);case _StoredSession() when storedSession != null:
-return storedSession(_that.userName);case _:
+return storedSession(_that.userName,_that.message);case _:
   return null;
 
 }
@@ -395,10 +395,11 @@ as String?,
 
 
 class _StoredSession implements AuthState {
-  const _StoredSession([this.userName]);
+  const _StoredSession({this.userName, this.message});
   
 
  final  String? userName;
+ final  String? message;
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
@@ -410,16 +411,16 @@ _$StoredSessionCopyWith<_StoredSession> get copyWith => __$StoredSessionCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StoredSession&&(identical(other.userName, userName) || other.userName == userName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _StoredSession&&(identical(other.userName, userName) || other.userName == userName)&&(identical(other.message, message) || other.message == message));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,userName);
+int get hashCode => Object.hash(runtimeType,userName,message);
 
 @override
 String toString() {
-  return 'AuthState.storedSession(userName: $userName)';
+  return 'AuthState.storedSession(userName: $userName, message: $message)';
 }
 
 
@@ -430,7 +431,7 @@ abstract mixin class _$StoredSessionCopyWith<$Res> implements $AuthStateCopyWith
   factory _$StoredSessionCopyWith(_StoredSession value, $Res Function(_StoredSession) _then) = __$StoredSessionCopyWithImpl;
 @useResult
 $Res call({
- String? userName
+ String? userName, String? message
 });
 
 
@@ -447,9 +448,10 @@ class __$StoredSessionCopyWithImpl<$Res>
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? userName = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? userName = freezed,Object? message = freezed,}) {
   return _then(_StoredSession(
-freezed == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
+userName: freezed == userName ? _self.userName : userName // ignore: cast_nullable_to_non_nullable
+as String?,message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

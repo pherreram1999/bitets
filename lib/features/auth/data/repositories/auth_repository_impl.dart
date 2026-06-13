@@ -1,4 +1,5 @@
 import 'package:local_auth/local_auth.dart';
+import '../../../../core/database/user_local_datasource.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_datasource.dart';
@@ -11,13 +12,16 @@ class AuthRepositoryImpl implements AuthRepository {
     AuthLocalDatasource? local,
     AuthRemoteDatasource? remote,
     LocalAuthentication? localAuth,
+    UserLocalDatasource? userCache,
   }) : _local = local ?? AuthLocalDatasource(),
        _remote = remote ?? AuthRemoteDatasource(),
-       _localAuth = localAuth ?? LocalAuthentication();
+       _localAuth = localAuth ?? LocalAuthentication(),
+       _userCache = userCache;
 
   final AuthLocalDatasource _local;
   final AuthRemoteDatasource _remote;
   final LocalAuthentication _localAuth;
+  final UserLocalDatasource? _userCache;
 
   @override
   Future<User> login({
@@ -33,10 +37,11 @@ class AuthRepositoryImpl implements AuthRepository {
       ),
     );
 
+    final user = response.user.toEntity();
     await _local.saveToken(response.token);
-    await _local.saveUserInfo(response.user.toEntity());
-
-    return response.user.toEntity();
+    await _local.saveUserInfo(user);
+    await _userCache?.saveUser(user);
+    return user;
   }
 
   @override
@@ -61,18 +66,24 @@ class AuthRepositoryImpl implements AuthRepository {
       ),
     );
 
+    final user = response.user.toEntity();
     await _local.saveToken(response.token);
-    await _local.saveUserInfo(response.user.toEntity());
-
-    return response.user.toEntity();
+    await _local.saveUserInfo(user);
+    await _userCache?.saveUser(user);
+    return user;
   }
 
   @override
   Future<User> getCurrentUser() async {
     final userModel = await _remote.getCurrentUser();
-    await _local.saveUserInfo(userModel.toEntity());
-    return userModel.toEntity();
+    final user = userModel.toEntity();
+    await _local.saveUserInfo(user);
+    await _userCache?.saveUser(user);
+    return user;
   }
+
+  @override
+  Future<User?> getCachedUser() => _userCache?.getUser() ?? Future.value(null);
 
   @override
   Future<void> logout() async {
@@ -80,6 +91,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await _remote.logout();
     } catch (_) {}
     await _local.clearAll();
+    await _userCache?.clear();
   }
 
   @override
@@ -110,7 +122,6 @@ class AuthRepositoryImpl implements AuthRepository {
         options: const AuthenticationOptions(stickyAuth: true),
       );
     } catch (_) {
-      // Sin biometria enrolada, bloqueo temporal o cancelacion del sistema.
       return false;
     }
   }

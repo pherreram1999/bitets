@@ -42,7 +42,11 @@ class _UnlockPageState extends ConsumerState<UnlockPage> {
     );
     final userName = authState.maybeWhen(
       orElse: () => null,
-      storedSession: (name) => name,
+      storedSession: (name, _) => name,
+    );
+    final storedMessage = authState.maybeWhen(
+      orElse: () => null,
+      storedSession: (_, msg) => msg,
     );
 
     return Scaffold(
@@ -121,6 +125,28 @@ class _UnlockPageState extends ConsumerState<UnlockPage> {
                             color: Theme.of(
                               context,
                             ).colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (storedMessage != null && !isLoading)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          storedMessage,
+                          style: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onTertiaryContainer,
                           ),
                         ),
                       ),

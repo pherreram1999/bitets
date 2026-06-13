@@ -85,7 +85,7 @@ class EnrolledExamenIds extends _$EnrolledExamenIds {
   @override
   Future<Set<String>> build() async {
     final repo = ref.read(alumnoExamenRepositoryProvider);
-    final all = await GridNotifierOps.loadAll(repo);
+    final all = await repo.getAllLocal();
     return all.map((e) => e.id).toSet();
   }
 }

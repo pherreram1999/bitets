@@ -84,7 +84,7 @@ abstract class _$ExamenesGrid extends $AsyncNotifier<PaginatedResult<Examen>> {
   FutureOr<PaginatedResult<Examen>> build(int page);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref
             as $Ref<
@@ -102,7 +102,7 @@ abstract class _$ExamenesGrid extends $AsyncNotifier<PaginatedResult<Examen>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -144,7 +144,7 @@ abstract class _$ExamenesFilters extends $Notifier<Map<String, dynamic>> {
   Map<String, dynamic> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<Map<String, dynamic>, Map<String, dynamic>>;
     final element =
         ref.element
@@ -154,7 +154,7 @@ abstract class _$ExamenesFilters extends $Notifier<Map<String, dynamic>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -236,7 +236,7 @@ abstract class _$AlumnoExamenesGrid
   FutureOr<PaginatedResult<Examen>> build(int page);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref
             as $Ref<
@@ -254,7 +254,7 @@ abstract class _$AlumnoExamenesGrid
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -297,7 +297,7 @@ abstract class _$AlumnoExamenesFilters extends $Notifier<Map<String, dynamic>> {
   Map<String, dynamic> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<Map<String, dynamic>, Map<String, dynamic>>;
     final element =
         ref.element
@@ -307,7 +307,7 @@ abstract class _$AlumnoExamenesFilters extends $Notifier<Map<String, dynamic>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -335,13 +335,13 @@ final class EnrolledExamenIdsProvider
   EnrolledExamenIds create() => EnrolledExamenIds();
 }
 
-String _$enrolledExamenIdsHash() => r'1e877274d2ee81f0cc14074492d8e905c84ab80b';
+String _$enrolledExamenIdsHash() => r'eba6edcfea3fd4a24bda7faf19725515365a583d';
 
 abstract class _$EnrolledExamenIds extends $AsyncNotifier<Set<String>> {
   FutureOr<Set<String>> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<Set<String>>, Set<String>>;
     final element =
         ref.element
@@ -351,7 +351,7 @@ abstract class _$EnrolledExamenIds extends $AsyncNotifier<Set<String>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -397,7 +397,7 @@ abstract class _$AlumnoCatalogoExamenesFilters
   Map<String, dynamic> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<Map<String, dynamic>, Map<String, dynamic>>;
     final element =
         ref.element
@@ -407,7 +407,7 @@ abstract class _$AlumnoCatalogoExamenesFilters
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }
 
@@ -493,7 +493,7 @@ abstract class _$AlumnoCatalogoExamenesGrid
   FutureOr<PaginatedResult<Examen>> build(int page);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref
             as $Ref<
@@ -511,6 +511,6 @@ abstract class _$AlumnoCatalogoExamenesGrid
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }

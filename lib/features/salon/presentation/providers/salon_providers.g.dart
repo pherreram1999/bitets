@@ -84,7 +84,7 @@ abstract class _$SalonesByEdificio extends $AsyncNotifier<List<Salon>> {
   FutureOr<List<Salon>> build(int edificioId);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<List<Salon>>, List<Salon>>;
     final element =
         ref.element
@@ -94,7 +94,7 @@ abstract class _$SalonesByEdificio extends $AsyncNotifier<List<Salon>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -173,7 +173,7 @@ abstract class _$SalonesDataset extends $AsyncNotifier<List<Salon>> {
   FutureOr<List<Salon>> build(String query);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<List<Salon>>, List<Salon>>;
     final element =
         ref.element
@@ -183,7 +183,7 @@ abstract class _$SalonesDataset extends $AsyncNotifier<List<Salon>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -262,7 +262,7 @@ abstract class _$SalonesGrid extends $AsyncNotifier<PaginatedResult<Salon>> {
   FutureOr<PaginatedResult<Salon>> build(int page);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref
             as $Ref<AsyncValue<PaginatedResult<Salon>>, PaginatedResult<Salon>>;
@@ -277,7 +277,7 @@ abstract class _$SalonesGrid extends $AsyncNotifier<PaginatedResult<Salon>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -319,7 +319,7 @@ abstract class _$SalonesFilters extends $Notifier<Map<String, dynamic>> {
   Map<String, dynamic> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<Map<String, dynamic>, Map<String, dynamic>>;
     final element =
         ref.element
@@ -329,6 +329,6 @@ abstract class _$SalonesFilters extends $Notifier<Map<String, dynamic>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

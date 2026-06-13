@@ -1,14 +1,17 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../core/database/local_providers.dart';
 import '../../../../core/network/auth_interceptor.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/auth_local_datasource.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
+import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import 'auth_state.dart';
 
@@ -21,13 +24,21 @@ class Auth extends _$Auth {
 
   @override
   AuthState build() {
+    ref.read(examenesSyncServiceProvider);
     _repository = AuthRepositoryImpl(
       local: AuthLocalDatasource(),
       remote: AuthRemoteDatasource(),
+      userCache: ref.read(userLocalDatasourceProvider),
     );
     _interceptor = AuthInterceptor(onUnauthorized: _handleUnauthorized);
     DioClient.addAuthInterceptor(_interceptor);
     return const AuthState.initial();
+  }
+
+  Future<void> _triggerSync() async {
+    try {
+      await ref.read(examenesSyncServiceProvider).checkAndSync();
+    } catch (_) {}
   }
 
   Future<String> _getDeviceName() async {
@@ -73,7 +84,7 @@ class Auth extends _$Auth {
     // Token exists. NEVER restore session without validating identity.
     // Always require unlock (biometric or password) — storedSession UI handles both.
     final userName = await _repository.getStoredUserName();
-    state = AuthState.storedSession(userName);
+    state = AuthState.storedSession(userName: userName);
   }
 
   Future<void> loginWithBiometrics() async {
@@ -82,23 +93,46 @@ class Auth extends _$Auth {
 
     final authenticated = await _repository.authenticateWithBiometrics();
     if (!authenticated) {
-      state = AuthState.storedSession(userName);
+      state = AuthState.storedSession(userName: userName);
       return;
     }
 
     final token = await _repository.getStoredToken();
     _interceptor.setCachedToken(token ?? '');
 
+    final User? cached = await _repository.getCachedUser();
+
     try {
       final user = await _repository.getCurrentUser();
       state = AuthState.authenticated(user);
-    } catch (e) {
-      await _repository.logout();
-      _interceptor.clearCachedToken();
-      state = const AuthState.unauthenticated();
-      if (kDebugMode) {
-        debugPrint('loginWithBiometrics error: $e');
+      unawaited(_triggerSync());
+      return;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401) {
+        await _repository.logout();
+        _interceptor.clearCachedToken();
+        state = const AuthState.unauthenticated();
+        return;
       }
+      if (kDebugMode) {
+        debugPrint('loginWithBiometrics offline: ${e.message}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('loginWithBiometrics unexpected: $e');
+      }
+    }
+
+    if (cached != null) {
+      state = AuthState.authenticated(cached);
+      unawaited(_triggerSync());
+    } else {
+      state = AuthState.storedSession(
+        userName: userName,
+        message:
+            'No se pudo validar tu identidad sin internet. '
+            'Conectate a la red e intenta de nuevo.',
+      );
     }
   }
 
@@ -117,6 +151,7 @@ class Auth extends _$Auth {
       _interceptor.setCachedToken(token ?? '');
 
       state = AuthState.authenticated(user);
+      unawaited(_triggerSync());
     } on DioException catch (e) {
       _logDioError('login', e);
       final message = _extractErrorMessage(e);
@@ -156,6 +191,7 @@ class Auth extends _$Auth {
       _interceptor.setCachedToken(token ?? '');
 
       state = AuthState.authenticated(user);
+      unawaited(_triggerSync());
     } on DioException catch (e) {
       _logDioError('register', e);
       final message = _extractErrorMessage(e);

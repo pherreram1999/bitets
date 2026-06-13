@@ -41,7 +41,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
       final target = auth.maybeWhen(
         authenticated: (user) => _homeFor(user),
-        storedSession: (_) => '/unlock',
+        storedSession: (_, _) => '/unlock',
         unauthenticated: (_) => '/login',
         orElse: () => '/', // initial → splash
       );

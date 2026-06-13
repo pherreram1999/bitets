@@ -84,7 +84,7 @@ abstract class _$ProfesoresDataset extends $AsyncNotifier<List<Profesor>> {
   FutureOr<List<Profesor>> build(String query);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<AsyncValue<List<Profesor>>, List<Profesor>>;
     final element =
         ref.element
@@ -94,7 +94,7 @@ abstract class _$ProfesoresDataset extends $AsyncNotifier<List<Profesor>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -174,7 +174,7 @@ abstract class _$ProfesoresGrid
   FutureOr<PaginatedResult<Profesor>> build(int page);
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref =
         this.ref
             as $Ref<
@@ -192,7 +192,7 @@ abstract class _$ProfesoresGrid
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(ref, () => build(_$args));
   }
 }
 
@@ -234,7 +234,7 @@ abstract class _$ProfesoresFilters extends $Notifier<Map<String, dynamic>> {
   Map<String, dynamic> build();
   @$mustCallSuper
   @override
-  void runBuild() {
+  WhenComplete runBuild() {
     final ref = this.ref as $Ref<Map<String, dynamic>, Map<String, dynamic>>;
     final element =
         ref.element
@@ -244,6 +244,6 @@ abstract class _$ProfesoresFilters extends $Notifier<Map<String, dynamic>> {
               Object?,
               Object?
             >;
-    element.handleCreate(ref, build);
+    return element.handleCreate(ref, build);
   }
 }

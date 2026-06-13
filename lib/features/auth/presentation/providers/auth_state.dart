@@ -13,5 +13,6 @@ class AuthState with _$AuthState {
 
   const factory AuthState.unauthenticated([String? message]) = _Unauthenticated;
 
-  const factory AuthState.storedSession([String? userName]) = _StoredSession;
+  const factory AuthState.storedSession({String? userName, String? message}) =
+      _StoredSession;
 }

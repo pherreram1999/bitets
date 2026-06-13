@@ -19,6 +19,8 @@ abstract class AuthRepository {
 
   Future<User> getCurrentUser();
 
+  Future<User?> getCachedUser();
+
   Future<void> logout();
 
   Future<bool> hasStoredToken();

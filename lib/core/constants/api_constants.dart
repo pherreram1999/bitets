@@ -12,5 +12,6 @@ class ApiConstants {
 
   static const String misExamenesPdf = '/mis-examenes/pdf';
   static const String misExamenesIcal = '/mis-examenes/ical';
+  static const String misExamenesPath = '/mis-examenes';
   static String misExamenesIcalExamen(int id) => '/mis-examenes/$id/ical';
 }
