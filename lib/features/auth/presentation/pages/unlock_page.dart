@@ -56,7 +56,7 @@ class _UnlockPageState extends ConsumerState<UnlockPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/AM_InicioSesion.webp',
+                    'assets/logo.webp',
                     height: 180,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, _) => Icon(

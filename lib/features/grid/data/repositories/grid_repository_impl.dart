@@ -13,8 +13,11 @@ class GridRepositoryImpl<T extends HasId> implements GridRepository<T> {
   final LaravelGridDatasource _datasource;
 
   @override
-  Future<PaginatedResult<T>> fetchPage(int page) async {
-    final response = await _datasource.fetchPage(page);
+  Future<PaginatedResult<T>> fetchPage(
+    int page, {
+    Map<String, dynamic>? query,
+  }) async {
+    final response = await _datasource.fetchPage(page, query: query);
     final meta = response.meta ?? const <String, dynamic>{};
     final items = response.data
         .map((dynamic e) => fromJson(e as Map<String, dynamic>))

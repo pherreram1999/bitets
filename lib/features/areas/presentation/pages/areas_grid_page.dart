@@ -9,9 +9,12 @@ import '../../../grid/presentation/actions/delete_action.dart';
 import '../../../grid/presentation/actions/edit_action.dart';
 import '../../../grid/presentation/actions/view_action.dart';
 import '../../../grid/presentation/pages/grid_page.dart';
+import '../../../grid/presentation/pages/grid_search.dart';
+import '../../../grid/presentation/pages/grid_search_state.dart';
 import '../../data/repositories/areas_repository.dart';
 import '../../domain/entities/area.dart';
 import '../forms/area_form.dart';
+import '../forms/areas_search.dart';
 import '../providers/areas_providers.dart';
 
 class AreasGridPage extends GridPage<Area> {
@@ -39,6 +42,22 @@ class AreasGridPage extends GridPage<Area> {
   GridFormBuilder<Area> get formBuilder =>
       ({required String endpoint, Area? item, bool readOnly = false}) =>
           AreaForm(endpoint: endpoint, item: item, readOnly: readOnly);
+
+  @override
+  Map<String, dynamic> currentFilters(WidgetRef ref) =>
+      ref.watch(areasFiltersProvider);
+
+  @override
+  void updateFilters(WidgetRef ref, Map<String, dynamic> filters) {
+    ref.read(areasFiltersProvider.notifier).apply(filters);
+  }
+
+  @override
+  GridSearch<Area> buildSearch(
+    BuildContext context,
+    Map<String, dynamic> currentFilters,
+    GlobalKey<GridSearchState<Area>> searchKey,
+  ) => AreasSearch(key: searchKey, initialValues: currentFilters);
 
   @override
   AsyncValue<PaginatedResult<Area>> watchGrid(WidgetRef ref, int page) =>

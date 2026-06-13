@@ -50,7 +50,7 @@ final class AreasGridProvider
   }
 }
 
-String _$areasGridHash() => r'0820515b2091cabd545b81be8088392bbb0b12d8';
+String _$areasGridHash() => r'598e5bac99c1b1628c8b99a019b337fed531a93c';
 
 final class AreasGridFamily extends $Family
     with
@@ -100,5 +100,57 @@ abstract class _$AreasGrid extends $AsyncNotifier<PaginatedResult<Area>> {
               Object?
             >;
     element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+@ProviderFor(AreasFilters)
+final areasFiltersProvider = AreasFiltersProvider._();
+
+final class AreasFiltersProvider
+    extends $NotifierProvider<AreasFilters, Map<String, dynamic>> {
+  AreasFiltersProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'areasFiltersProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$areasFiltersHash();
+
+  @$internal
+  @override
+  AreasFilters create() => AreasFilters();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<String, dynamic> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<String, dynamic>>(value),
+    );
+  }
+}
+
+String _$areasFiltersHash() => r'0133aaac1171722fac87b1e2810a141d4487186e';
+
+abstract class _$AreasFilters extends $Notifier<Map<String, dynamic>> {
+  Map<String, dynamic> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<Map<String, dynamic>, Map<String, dynamic>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<Map<String, dynamic>, Map<String, dynamic>>,
+              Map<String, dynamic>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
   }
 }

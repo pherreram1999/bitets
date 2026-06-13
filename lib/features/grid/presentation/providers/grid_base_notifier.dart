@@ -16,6 +16,22 @@ abstract final class GridNotifierOps {
 
   static Future<PaginatedResult<T>> refreshPage<T extends HasId>(
     GridRepository<T> repository,
-    int currentPage,
-  ) => repository.fetchPage(currentPage);
+    int currentPage, {
+    Map<String, dynamic>? query,
+  }) => repository.fetchPage(currentPage, query: query);
+
+  static Future<List<T>> loadAll<T extends HasId>(
+    GridRepository<T> repository, {
+    Map<String, dynamic>? query,
+  }) async {
+    final all = <T>[];
+    int page = 1;
+    while (true) {
+      final result = await repository.fetchPage(page, query: query);
+      all.addAll(result.items);
+      if (!result.hasNextPage) break;
+      page++;
+    }
+    return all;
+  }
 }

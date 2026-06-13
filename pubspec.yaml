@@ -29,8 +29,22 @@ dev_dependencies:
   riverpod_lint: ^3.1.0
   json_serializable: ^6.8.0
   freezed: ^3.2.3
+  flutter_launcher_icons: ^0.14.1
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/
+    - assets/AM_InicioSesion.webp
+    - assets/logo.webp
+
+flutter_launcher_icons:
+  image_path: "assets/logo.webp"
+  android: true
+  ios: true
+  web:
+    generate: true
+  windows:
+    generate: true
+  macos:
+    generate: true
+  adaptive_icon_background: "#673AB7"

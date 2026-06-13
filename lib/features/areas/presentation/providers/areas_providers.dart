@@ -7,38 +7,42 @@ import '../../domain/entities/area.dart';
 
 part 'areas_providers.g.dart';
 
-final areasRepositoryProvider = Provider<AreasRepository>(
+final areaRepositoryProvider = Provider<AreasRepository>(
   (ref) => AreasRepository(),
 );
 
-final areasListProvider = FutureProvider<List<Area>>((ref) async {
-  final repo = ref.read(areasRepositoryProvider);
-  final all = <Area>[];
-  int page = 1;
-  while (true) {
-    final result = await repo.fetchPage(page);
-    all.addAll(result.items);
-    if (!result.hasNextPage) break;
-    page++;
-  }
-  return all;
-});
+final areasListProvider = FutureProvider<List<Area>>(
+  (ref) => GridNotifierOps.loadAll(ref.read(areaRepositoryProvider)),
+);
 
 @riverpod
 class AreasGrid extends _$AreasGrid {
   @override
   Future<PaginatedResult<Area>> build(int page) {
-    return GridNotifierOps.refreshPage(ref.read(areasRepositoryProvider), page);
+    final filters = ref.watch(areasFiltersProvider);
+    return GridNotifierOps.refreshPage(
+      ref.read(areaRepositoryProvider),
+      page,
+      query: filters.isEmpty ? null : filters,
+    );
   }
 
   Future<void> deleteItem(String id) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(
       () => GridNotifierOps.deleteAndRefresh(
-        ref.read(areasRepositoryProvider),
+        ref.read(areaRepositoryProvider),
         page,
         id,
       ),
     );
   }
+}
+
+@riverpod
+class AreasFilters extends _$AreasFilters {
+  @override
+  Map<String, dynamic> build() => {};
+
+  void apply(Map<String, dynamic> filters) => state = filters;
 }

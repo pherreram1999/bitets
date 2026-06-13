@@ -9,6 +9,95 @@ part of 'profesores_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
+@ProviderFor(ProfesoresDataset)
+final profesoresDatasetProvider = ProfesoresDatasetFamily._();
+
+final class ProfesoresDatasetProvider
+    extends $AsyncNotifierProvider<ProfesoresDataset, List<Profesor>> {
+  ProfesoresDatasetProvider._({
+    required ProfesoresDatasetFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'profesoresDatasetProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$profesoresDatasetHash();
+
+  @override
+  String toString() {
+    return r'profesoresDatasetProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  ProfesoresDataset create() => ProfesoresDataset();
+
+  @override
+  bool operator ==(Object other) {
+    return other is ProfesoresDatasetProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$profesoresDatasetHash() => r'1c5d85d2c7efbb29813e69f85b328913527f4ab1';
+
+final class ProfesoresDatasetFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          ProfesoresDataset,
+          AsyncValue<List<Profesor>>,
+          List<Profesor>,
+          FutureOr<List<Profesor>>,
+          String
+        > {
+  ProfesoresDatasetFamily._()
+    : super(
+        retry: null,
+        name: r'profesoresDatasetProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  ProfesoresDatasetProvider call(String query) =>
+      ProfesoresDatasetProvider._(argument: query, from: this);
+
+  @override
+  String toString() => r'profesoresDatasetProvider';
+}
+
+abstract class _$ProfesoresDataset extends $AsyncNotifier<List<Profesor>> {
+  late final _$args = ref.$arg as String;
+  String get query => _$args;
+
+  FutureOr<List<Profesor>> build(String query);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<List<Profesor>>, List<Profesor>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<List<Profesor>>, List<Profesor>>,
+              AsyncValue<List<Profesor>>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
 @ProviderFor(ProfesoresGrid)
 final profesoresGridProvider = ProfesoresGridFamily._();
 
@@ -50,7 +139,7 @@ final class ProfesoresGridProvider
   }
 }
 
-String _$profesoresGridHash() => r'e462a74e74ea611a859a2d3feaa6d3c5c4d10747';
+String _$profesoresGridHash() => r'2fab25a9619070047be83323a72d71ab852c3b9b';
 
 final class ProfesoresGridFamily extends $Family
     with
@@ -104,5 +193,57 @@ abstract class _$ProfesoresGrid
               Object?
             >;
     element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+@ProviderFor(ProfesoresFilters)
+final profesoresFiltersProvider = ProfesoresFiltersProvider._();
+
+final class ProfesoresFiltersProvider
+    extends $NotifierProvider<ProfesoresFilters, Map<String, dynamic>> {
+  ProfesoresFiltersProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'profesoresFiltersProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$profesoresFiltersHash();
+
+  @$internal
+  @override
+  ProfesoresFilters create() => ProfesoresFilters();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<String, dynamic> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<String, dynamic>>(value),
+    );
+  }
+}
+
+String _$profesoresFiltersHash() => r'a9990ef14bc26599352d55ae0d897bbed5ab08c3';
+
+abstract class _$ProfesoresFilters extends $Notifier<Map<String, dynamic>> {
+  Map<String, dynamic> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<Map<String, dynamic>, Map<String, dynamic>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<Map<String, dynamic>, Map<String, dynamic>>,
+              Map<String, dynamic>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
   }
 }

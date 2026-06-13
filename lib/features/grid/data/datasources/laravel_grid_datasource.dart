@@ -10,8 +10,11 @@ class LaravelGridDatasource {
   final Dio _dio;
   final LaravelResourceController _controller;
 
-  Future<LaravelPaginatedResponse> fetchPage(int page) async {
-    final response = await _dio.get(_controller.list(page: page));
+  Future<LaravelPaginatedResponse> fetchPage(
+    int page, {
+    Map<String, dynamic>? query,
+  }) async {
+    final response = await _dio.get(_controller.list(page: page, query: query));
     return LaravelPaginatedResponse.fromJson(
       response.data as Map<String, dynamic>,
     );

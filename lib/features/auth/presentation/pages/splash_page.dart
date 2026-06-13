@@ -13,7 +13,7 @@ class SplashPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/AM_InicioSesion.webp',
+              'assets/logo.webp',
               height: 160,
               fit: BoxFit.contain,
               errorBuilder: (context, error, _) => Icon(

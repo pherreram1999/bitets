@@ -26,7 +26,21 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('bitets'),
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/logo.webp',
+              height: 32,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, _) => Icon(
+                Icons.school,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text('bitets'),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle_outlined),

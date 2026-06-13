@@ -61,7 +61,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
               child: Column(
                 children: [
                   Image.asset(
-                    'assets/AM_InicioSesion.webp',
+                    'assets/logo.webp',
                     height: 180,
                     fit: BoxFit.contain,
                     errorBuilder: (context, error, _) => Icon(

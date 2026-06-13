@@ -13,6 +13,7 @@ abstract class GridAction<T extends HasId> {
   IconData get icon;
   bool get requiresConfirmation => false;
   String? get confirmationMessage => null;
+  bool get requiresAdmin => false;
 
   Future<bool> execute(
     BuildContext context,

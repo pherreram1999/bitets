@@ -199,9 +199,8 @@ class Auth extends _$Auth {
   }
 
   void _handleUnauthorized() {
-    _repository.logout().then((_) {
-      state = const AuthState.unauthenticated();
-    });
+    _interceptor.clearCachedToken();
+    state = const AuthState.unauthenticated();
   }
 
   void _logDioError(String tag, DioException e) {

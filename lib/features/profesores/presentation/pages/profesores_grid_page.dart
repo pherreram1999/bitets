@@ -10,9 +10,12 @@ import '../../../grid/presentation/actions/delete_action.dart';
 import '../../../grid/presentation/actions/edit_action.dart';
 import '../../../grid/presentation/actions/view_action.dart';
 import '../../../grid/presentation/pages/grid_page.dart';
+import '../../../grid/presentation/pages/grid_search.dart';
+import '../../../grid/presentation/pages/grid_search_state.dart';
 import '../../data/repositories/profesores_repository.dart';
 import '../../domain/entities/profesor.dart';
 import '../forms/profesor_form.dart';
+import '../forms/profesores_search.dart';
 import '../providers/profesores_providers.dart';
 
 class ProfesoresGridPage extends GridPage<Profesor> {
@@ -42,12 +45,30 @@ class ProfesoresGridPage extends GridPage<Profesor> {
           ProfesorForm(endpoint: endpoint, item: item, readOnly: readOnly);
 
   @override
+  Map<String, dynamic> currentFilters(WidgetRef ref) =>
+      ref.watch(profesoresFiltersProvider);
+
+  @override
+  void updateFilters(WidgetRef ref, Map<String, dynamic> filters) {
+    ref.read(profesoresFiltersProvider.notifier).apply(filters);
+  }
+
+  @override
+  GridSearch<Profesor> buildSearch(
+    BuildContext context,
+    Map<String, dynamic> currentFilters,
+    GlobalKey<GridSearchState<Profesor>> searchKey,
+  ) => ProfesoresSearch(key: searchKey, initialValues: currentFilters);
+
+  @override
   AsyncValue<PaginatedResult<Profesor>> watchGrid(WidgetRef ref, int page) =>
       ref.watch(profesoresGridProvider(page));
 
   @override
-  void onActionCompleted(WidgetRef ref) =>
-      ref.invalidate(profesoresGridProvider);
+  void onActionCompleted(WidgetRef ref) {
+    ref.invalidate(profesoresGridProvider);
+    ref.invalidate(areasListProvider);
+  }
 
   @override
   Future<void> refresh(WidgetRef ref, int page) async {

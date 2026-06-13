@@ -5,6 +5,8 @@ import '../../domain/entities/has_id.dart';
 import '../../domain/entities/laravel_resource_controller.dart';
 import '../../domain/entities/paginated_result.dart';
 import '../../domain/repositories/grid_repository.dart';
+import 'grid_search.dart';
+import 'grid_search_state.dart';
 import 'grid_state.dart';
 
 abstract class GridPage<T extends HasId> extends ConsumerStatefulWidget {
@@ -15,6 +17,14 @@ abstract class GridPage<T extends HasId> extends ConsumerStatefulWidget {
   LaravelResourceController get controller;
   List<GridAction<T>> get actions;
   GridFormBuilder<T> get formBuilder;
+  GridSearch<T> buildSearch(
+    BuildContext context,
+    Map<String, dynamic> currentFilters,
+    GlobalKey<GridSearchState<T>> searchKey,
+  );
+
+  Map<String, dynamic> currentFilters(WidgetRef ref);
+  void updateFilters(WidgetRef ref, Map<String, dynamic> filters);
 
   AsyncValue<PaginatedResult<T>> watchGrid(WidgetRef ref, int page);
   void onActionCompleted(WidgetRef ref);

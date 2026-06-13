@@ -16,6 +16,13 @@ class AuthInterceptor extends Interceptor {
   /// Endpoints que NO requieren token.
   static const _publicEndpoints = ['/auth/login', '/auth/register'];
 
+  static const _unauthorizedSkipPaths = [
+    '/auth/login',
+    '/auth/register',
+    '/auth/logout',
+    '/auth/me',
+  ];
+
   /// Carga el token desde secure storage al cache.
   Future<void> loadToken() async {
     _cachedToken = await _storage.read(key: 'auth_token');
@@ -50,11 +57,15 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    // Si el servidor devuelve 401, el token expiro o es invalido
     if (err.response?.statusCode == 401) {
-      _cachedToken = null;
-      await _storage.deleteAll();
-      onUnauthorized();
+      final isAuthEndpoint = _unauthorizedSkipPaths.any(
+        (path) => err.requestOptions.path.contains(path),
+      );
+      if (!isAuthEndpoint) {
+        _cachedToken = null;
+        await _storage.deleteAll();
+        onUnauthorized();
+      }
     }
     handler.next(err);
   }

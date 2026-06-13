@@ -1,13 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/auth/user_role.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/providers/auth_state.dart';
 import '../../domain/entities/grid_action.dart';
 import '../../domain/entities/has_id.dart';
 import '../../domain/entities/paginated_result.dart';
 import '../actions/create_action.dart';
 import 'grid_page.dart';
+import 'grid_search_modal.dart';
 
 class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
   int _currentPage = 1;
+
+  bool _isAdmin(WidgetRef ref) {
+    final auth = ref.read(authProvider);
+    return auth.maybeWhen(
+      authenticated: (user) => user.isAdmin,
+      orElse: () => false,
+    );
+  }
+
+  List<GridAction<T>> _visibleActions(WidgetRef ref) {
+    final admin = _isAdmin(ref);
+    return widget.actions
+        .where((a) => !a.requiresAdmin || admin)
+        .toList(growable: false);
+  }
 
   Future<bool> _confirmAction(GridAction<T> action) async {
     final result = await showDialog<bool>(
@@ -56,10 +75,40 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
     await _runAction(create, null);
   }
 
+  Future<void> _openSearch() async {
+    final currentFilters = widget.currentFilters(ref);
+    final result = await showGridSearch<T>(
+      context: context,
+      searchBuilder: (key) => widget.buildSearch(context, currentFilters, key),
+    );
+    if (!mounted) return;
+    if (result == null) return;
+    widget.updateFilters(ref, result);
+    if (_currentPage != 1) {
+      setState(() {
+        _currentPage = 1;
+      });
+    }
+  }
+
   void _goToPage(int newPage) {
     setState(() {
       _currentPage = newPage;
     });
+  }
+
+  Widget? _buildSearchAction() {
+    final filters = widget.currentFilters(ref);
+    final hasFilters = filters.isNotEmpty;
+    return IconButton(
+      icon: Badge(
+        isLabelVisible: hasFilters,
+        label: Text('${filters.length}'),
+        child: const Icon(Icons.search),
+      ),
+      tooltip: hasFilters ? 'Buscar (filtros activos)' : 'Buscar',
+      onPressed: _openSearch,
+    );
   }
 
   @override
@@ -72,6 +121,7 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
+          ?_buildSearchAction(),
           if (hasCreate)
             IconButton(
               icon: const Icon(Icons.add),
@@ -132,21 +182,29 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
                                       tooltip: 'Acciones',
                                       onSelected: (GridAction<T> action) =>
                                           _runAction(action, item),
-                                      itemBuilder: (context) => widget.actions
-                                          .map(
-                                            (GridAction<T> a) =>
-                                                PopupMenuItem<GridAction<T>>(
-                                                  value: a,
-                                                  child: Row(
-                                                    children: [
-                                                      Icon(a.icon, size: 20),
-                                                      const SizedBox(width: 12),
-                                                      Text(a.label),
-                                                    ],
-                                                  ),
-                                                ),
-                                          )
-                                          .toList(),
+                                      itemBuilder: (context) =>
+                                          _visibleActions(ref)
+                                              .map(
+                                                (GridAction<T> a) =>
+                                                    PopupMenuItem<
+                                                      GridAction<T>
+                                                    >(
+                                                      value: a,
+                                                      child: Row(
+                                                        children: [
+                                                          Icon(
+                                                            a.icon,
+                                                            size: 20,
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 12,
+                                                          ),
+                                                          Text(a.label),
+                                                        ],
+                                                      ),
+                                                    ),
+                                              )
+                                              .toList(),
                                     ),
                                   ],
                                 ),

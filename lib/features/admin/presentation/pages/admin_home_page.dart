@@ -5,7 +5,13 @@ import '../../../auth/domain/entities/user.dart';
 import '../../../auth/presentation/pages/profile_page.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/providers/auth_state.dart';
+import '../../../carrera/presentation/pages/carrera_grid_page.dart';
+import '../../../edificio/presentation/pages/edificio_grid_page.dart';
+import '../../../examen/presentation/pages/examen_grid_page.dart';
+import '../../../plan_estudio/presentation/pages/plan_estudio_grid_page.dart';
 import '../../../profesores/presentation/pages/profesores_grid_page.dart';
+import '../../../salon/presentation/pages/salon_grid_page.dart';
+import '../../../unidad_aprendizaje/presentation/pages/unidad_aprendizaje_grid_page.dart';
 import 'admin_dashboard_page.dart';
 import 'admin_reports_page.dart';
 
@@ -24,6 +30,12 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage> {
     AdminReportsPage(),
     AreasGridPage(),
     ProfesoresGridPage(),
+    CarreraGridPage(),
+    PlanesEstudioGridPage(),
+    UnidadesAprendizajeGridPage(),
+    EdificiosGridPage(),
+    SalonesGridPage(),
+    ExamenesGridPage(),
   ];
 
   static const List<_AdminDestination> _destinations = [
@@ -46,6 +58,36 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage> {
       icon: Icons.school_outlined,
       selectedIcon: Icons.school,
       label: 'Profesores',
+    ),
+    _AdminDestination(
+      icon: Icons.school_outlined,
+      selectedIcon: Icons.school,
+      label: 'Carreras',
+    ),
+    _AdminDestination(
+      icon: Icons.menu_book_outlined,
+      selectedIcon: Icons.menu_book,
+      label: 'Planes',
+    ),
+    _AdminDestination(
+      icon: Icons.layers_outlined,
+      selectedIcon: Icons.layers,
+      label: 'Unidades',
+    ),
+    _AdminDestination(
+      icon: Icons.apartment_outlined,
+      selectedIcon: Icons.apartment,
+      label: 'Edificios',
+    ),
+    _AdminDestination(
+      icon: Icons.meeting_room_outlined,
+      selectedIcon: Icons.meeting_room,
+      label: 'Salones',
+    ),
+    _AdminDestination(
+      icon: Icons.assignment_outlined,
+      selectedIcon: Icons.assignment,
+      label: 'Examenes',
     ),
   ];
 
@@ -72,7 +114,21 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('bitets · Admin'),
+        title: Row(
+          children: [
+            Image.asset(
+              'assets/logo.webp',
+              height: 32,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, _) => Icon(
+                Icons.school,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text('bitets · Admin'),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.account_circle_outlined),
