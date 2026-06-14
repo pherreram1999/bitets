@@ -10,15 +10,8 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/examen/data/repositories/alumno_examen_repository.dart';
 
-/// Base URL del backend local segun la plataforma.
-/// - Android (emulador o dispositivo fisico): 127.0.0.1 requiere
-///   `adb reverse tcp:8000 tcp:8000` para alcanzar el host.
-/// - iOS sim / desktop / web: 127.0.0.1 alcanza el host directamente.
-/// Se puede sobreescribir globalmente con --dart-define=API_BASE_URL=...
 String _resolveEndpoint() {
-  const port = 8000;
-  const path = '/api/v1';
-  return 'http://127.0.0.1:$port$path';
+  return 'https://saets.nullpointer.us.kg/api/v1';
 }
 
 void main() {

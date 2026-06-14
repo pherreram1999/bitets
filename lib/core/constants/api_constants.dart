@@ -1,7 +1,7 @@
 class ApiConstants {
   ApiConstants._();
 
-  static String baseUrl = 'http://127.0.0.1:8000/api/v1';
+  static String baseUrl = 'https://saets.nullpointer.us.kg/api/v1';
 
   static const Duration timeout = Duration(seconds: 30);
 
@@ -14,4 +14,8 @@ class ApiConstants {
   static const String misExamenesIcal = '/mis-examenes/ical';
   static const String misExamenesPath = '/mis-examenes';
   static String misExamenesIcalExamen(int id) => '/mis-examenes/$id/ical';
+
+  static const String chartExamenesPorCarrera = '/charts/examenes-por-carrera';
+  static const String chartInscritosPorMateria =
+      '/charts/inscritos-por-materia';
 }

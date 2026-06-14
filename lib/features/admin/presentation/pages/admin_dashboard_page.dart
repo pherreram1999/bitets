@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../auth/presentation/providers/auth_state.dart';
+import '../widgets/examenes_por_carrera_chart.dart';
+import '../widgets/inscritos_por_materia_chart.dart';
 
 class AdminDashboardPage extends ConsumerWidget {
   const AdminDashboardPage({super.key});
@@ -80,49 +82,10 @@ class AdminDashboardPage extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          _PlaceholderTile(
-            icon: Icons.school_outlined,
-            title: 'Carreras',
-            subtitle: 'Proximamente',
-          ),
-          const SizedBox(height: 12),
-          _PlaceholderTile(
-            icon: Icons.location_city_outlined,
-            title: 'Edificios y salones',
-            subtitle: 'Proximamente',
-          ),
-          const SizedBox(height: 12),
-          _PlaceholderTile(
-            icon: Icons.layers_outlined,
-            title: 'Areas y unidades',
-            subtitle: 'Proximamente',
-          ),
+          const ExamenesPorCarreraChart(),
+          const SizedBox(height: 16),
+          const InscritosPorMateriaChart(),
         ],
-      ),
-    );
-  }
-}
-
-class _PlaceholderTile extends StatelessWidget {
-  const _PlaceholderTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Card(
-      child: ListTile(
-        leading: Icon(icon, color: colorScheme.primary),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: Icon(Icons.lock_clock_outlined, color: colorScheme.outline),
       ),
     );
   }
