@@ -69,7 +69,6 @@ When you extend `GridPage<T>`, the base `GridState<T>` (in `lib/features/grid/pr
 | **Card layout** | Each item renders inside a `Card` with the body the concrete page provides + a `PopupMenuButton` (`more_vert` icon) on the right with the actions list. |
 | **Pull-to-refresh** | The list is wrapped in `RefreshIndicator` with `AlwaysScrollableScrollPhysics` so it works even with 0 items. The callback calls `widget.refresh(ref, _currentPage)` which must await the provider's `.future` so the spinner stays visible. |
 | **Confirmation modal** | Before running any action with `requiresConfirmation == true`, the state shows a Material `AlertDialog` (title = action label, content = `confirmationMessage` or default "Estas seguro?", actions = Cancelar / FilledButton). |
-| **Create button** | If `widget.actions` contains a `CreateAction<T>`, an `IconButton(icon: Icons.add)` is shown in `AppBar.actions`. Tapping it calls `_runAction(createAction, null)`. |
 | **Loading / error states** | `state.when(loading, error, data)` renders a centered spinner, a red error message, or the data view (or "Sin resultados" if `items.isEmpty`). |
 | **Refresh after mutation** | After an action returns `true`, the state calls `widget.onActionCompleted(ref)`, which must invalidate the provider. |
 | **Submit + error display** | The form's save button POSTs or PUTs via `DioClient.instance`. On 4xx/5xx, the error message from the response (or a generic fallback) is rendered inside an `errorContainer`. |
@@ -94,8 +93,7 @@ lib/features/grid/                                # infrastructure (do not edit 
       grid_page.dart                              # abstract ConsumerStatefulWidget
       grid_state.dart                             # base State: paginator, popup menu, confirmations, RefreshIndicator
     providers/grid_base_notifier.dart             # GridNotifierOps (static helpers for refresh / delete-and-refresh)
-    actions/                                      # the 4 default action classes
-      create_action.dart
+    actions/                                      # the 3 default action classes
       view_action.dart
       edit_action.dart
       delete_action.dart
@@ -155,7 +153,7 @@ typedef GridFormBuilder<T> = Widget Function({
 - `String? get confirmationMessage` (default `null` → generic "Estas seguro?").
 - `Future<bool> execute(context, item, repository, controller, formBuilder)` — does the work. Returns `true` if the grid should refresh, `false` otherwise.
 
-The four default actions (`CreateAction`, `ViewAction`, `EditAction`, `DeleteAction`) cover the standard CRUD. Custom catalogs can add more by implementing `GridAction<T>` (e.g. `RestoreAction<T>` for soft-deletes, see section 8).
+The three default actions (`ViewAction`, `EditAction`, `DeleteAction`) cover the standard CRUD. Custom catalogs can add more by implementing `GridAction<T>` (e.g. `RestoreAction<T>` for soft-deletes, see section 8).
 
 #### `GridRepository<T>` and `GridRepositoryImpl<T>`
 The interface and default implementation. The interface is:
@@ -405,7 +403,7 @@ class FooGridPage extends GridPage<Foo> {
   @override LaravelResourceController get controller =>
       const LaravelResourceController('/foos');
   @override List<GridAction<Foo>> get actions => const [
-        CreateAction<Foo>(), ViewAction<Foo>(), EditAction<Foo>(), DeleteAction<Foo>(),
+        ViewAction<Foo>(), EditAction<Foo>(), DeleteAction<Foo>(),
       ];
   @override GridFormBuilder<Foo> get formBuilder =>
       ({required endpoint, item, readOnly = false}) =>
@@ -504,19 +502,8 @@ User pulls down
   -> spinner dismisses, list updates
 ```
 
-#### Create (FAB)
-```
-User taps + in AppBar
-  -> _openCreate() -> _runAction(CreateAction, null)
-  -> createAction.execute(context, null, repo, controller, formBuilder)
-     -> Navigator.push(formBuilder(endpoint: controller.create(), item: null, readOnly: false))
-     -> form mounted -> GridFormState.initState -> hydrate(null)
-     -> user fills, taps Guardar -> _submit()
-        -> widget.item == null -> _dio.post(endpoint, data: collectFormData())
-        -> 2xx -> Navigator.pop(context, true)
-        -> 4xx/5xx -> _extractDioMessage(e) -> setState(_errorMessage = ...)
-     -> Navigator.push resolves to true
-  -> action returns true
+#### Create
+There is no built-in create action anymore. Catalogs that need to create items can add a custom `GridAction<T>` that pushes the form via `formBuilder(endpoint: controller.create(), item: null, readOnly: false)` and returns `true` to refresh.
   -> state calls widget.onActionCompleted(ref) -> ref.invalidate(fooGridProvider)
   -> provider rebuilds, grid refreshes
 ```

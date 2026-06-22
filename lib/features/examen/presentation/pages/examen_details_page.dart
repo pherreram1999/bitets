@@ -164,119 +164,122 @@ class _ExamenDetailsPageState extends ConsumerState<ExamenDetailsPage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Detalle del examen')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(examen.descripcion, style: textTheme.headlineSmall),
-            const SizedBox(height: 12),
-            _DetailRow(
-              icon: Icons.event,
-              label: 'Horario',
-              value: _formatDateTime(examen.horario),
-            ),
-            if (unidad != null) ...[
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(examen.descripcion, style: textTheme.headlineSmall),
               const SizedBox(height: 12),
               _DetailRow(
-                icon: Icons.school_outlined,
-                label: 'Unidad de aprendizaje',
-                value: [
-                  unidad.nombre,
-                  if (unidad.semestre != null) 'Semestre ${unidad.semestre}',
-                ].join(' · '),
+                icon: Icons.event,
+                label: 'Horario',
+                value: _formatDateTime(examen.horario),
               ),
-            ],
-            if (profesor != null) ...[
+              if (unidad != null) ...[
+                const SizedBox(height: 12),
+                _DetailRow(
+                  icon: Icons.school_outlined,
+                  label: 'Unidad de aprendizaje',
+                  value: [
+                    unidad.nombre,
+                    if (unidad.semestre != null) 'Semestre ${unidad.semestre}',
+                  ].join(' · '),
+                ),
+              ],
+              if (profesor != null) ...[
+                const SizedBox(height: 12),
+                _DetailRow(
+                  icon: Icons.person_outline,
+                  label: 'Profesor',
+                  value: profesor.nombre,
+                ),
+              ],
+              if (edificio != null || salon != null) ...[
+                const SizedBox(height: 12),
+                _DetailRow(
+                  icon: Icons.meeting_room_outlined,
+                  label: 'Ubicacion',
+                  value: [
+                    if (edificio != null) edificio.nombre,
+                    if (salon != null) salon.nombre,
+                  ].join(' · '),
+                ),
+              ],
               const SizedBox(height: 12),
               _DetailRow(
-                icon: Icons.person_outline,
-                label: 'Profesor',
-                value: profesor.nombre,
+                icon: Icons.toggle_on_outlined,
+                label: 'Estado',
+                value: examen.activo ? 'Activo' : 'Inactivo',
               ),
+              if (_errorMessage != null) ...[
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: colorScheme.errorContainer,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    _errorMessage!,
+                    style: TextStyle(color: colorScheme.onErrorContainer),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 24),
+              if (enrolled)
+                FilledButton.tonalIcon(
+                  onPressed: _busy ? null : _unenroll,
+                  icon: _busy
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.event_busy_outlined),
+                  label: const Text('Desinscribir'),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                )
+              else
+                FilledButton.icon(
+                  onPressed: (_busy || !examen.activo) ? null : _enroll,
+                  icon: _busy
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.add_circle_outline),
+                  label: Text(
+                    examen.activo ? 'Inscribirme' : 'Examen no disponible',
+                  ),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              if (enrolled) ...[
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: _busyIcal ? null : _addToCalendar,
+                  icon: _busyIcal
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.event_note_outlined),
+                  label: const Text('Añadir a calendario'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ],
             ],
-            if (edificio != null || salon != null) ...[
-              const SizedBox(height: 12),
-              _DetailRow(
-                icon: Icons.meeting_room_outlined,
-                label: 'Ubicacion',
-                value: [
-                  if (edificio != null) edificio.nombre,
-                  if (salon != null) salon.nombre,
-                ].join(' · '),
-              ),
-            ],
-            const SizedBox(height: 12),
-            _DetailRow(
-              icon: Icons.toggle_on_outlined,
-              label: 'Estado',
-              value: examen.activo ? 'Activo' : 'Inactivo',
-            ),
-            if (_errorMessage != null) ...[
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: colorScheme.errorContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  _errorMessage!,
-                  style: TextStyle(color: colorScheme.onErrorContainer),
-                ),
-              ),
-            ],
-            const SizedBox(height: 24),
-            if (enrolled)
-              FilledButton.tonalIcon(
-                onPressed: _busy ? null : _unenroll,
-                icon: _busy
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.event_busy_outlined),
-                label: const Text('Desinscribir'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-              )
-            else
-              FilledButton.icon(
-                onPressed: (_busy || !examen.activo) ? null : _enroll,
-                icon: _busy
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.add_circle_outline),
-                label: Text(
-                  examen.activo ? 'Inscribirme' : 'Examen no disponible',
-                ),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-              ),
-            if (enrolled) ...[
-              const SizedBox(height: 12),
-              OutlinedButton.icon(
-                onPressed: _busyIcal ? null : _addToCalendar,
-                icon: _busyIcal
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.event_note_outlined),
-                label: const Text('Añadir a calendario'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-              ),
-            ],
-          ],
+          ),
         ),
       ),
     );

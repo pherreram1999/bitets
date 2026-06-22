@@ -6,7 +6,6 @@ import '../../../auth/presentation/providers/auth_state.dart';
 import '../../domain/entities/grid_action.dart';
 import '../../domain/entities/has_id.dart';
 import '../../domain/entities/paginated_result.dart';
-import '../actions/create_action.dart';
 import 'grid_page.dart';
 import 'grid_search_modal.dart';
 
@@ -70,12 +69,6 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
     }
   }
 
-  Future<void> _openCreate() async {
-    final create = widget.actions.whereType<CreateAction<T>>().firstOrNull;
-    if (create == null) return;
-    await _runAction(create, null);
-  }
-
   Future<void> _openSearch() async {
     final currentFilters = widget.currentFilters(ref);
     final result = await showGridSearch<T>(
@@ -116,7 +109,6 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
   Widget build(BuildContext context) {
     final gridState = widget.watchGrid(ref, _currentPage);
     final colorScheme = Theme.of(context).colorScheme;
-    final hasCreate = widget.actions.whereType<CreateAction<T>>().isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -124,107 +116,105 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
         actions: [
           ?_buildSearchAction(),
           ...widget.extraAppBarActions(context, ref),
-          if (hasCreate)
-            IconButton(
-              icon: const Icon(Icons.add),
-              tooltip: 'Crear',
-              onPressed: _openCreate,
-            ),
         ],
       ),
-      body: gridState.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object error, StackTrace _) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(
-              'Error al cargar: $error',
-              style: TextStyle(color: colorScheme.error),
-              textAlign: TextAlign.center,
+      body: SafeArea(
+        top: false,
+        child: gridState.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (Object error, StackTrace _) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                'Error al cargar: $error',
+                style: TextStyle(color: colorScheme.error),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
-        ),
-        data: (PaginatedResult<T> result) {
-          return Column(
-            children: [
-              Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () => widget.refresh(ref, _currentPage),
-                  child: result.items.isEmpty
-                      ? ListView(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(vertical: 200),
-                          children: const [
-                            Center(child: Text('Sin resultados')),
-                          ],
-                        )
-                      : ListView.separated(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: const EdgeInsets.all(16),
-                          itemCount: result.items.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: 8),
-                          itemBuilder: (context, index) {
-                            final item = result.items[index];
-                            return Card(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: widget.buildCardBody(
-                                        context,
-                                        item,
+          data: (PaginatedResult<T> result) {
+            return Column(
+              children: [
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () => widget.refresh(ref, _currentPage),
+                    child: result.items.isEmpty
+                        ? ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(vertical: 200),
+                            children: const [
+                              Center(child: Text('Sin resultados')),
+                            ],
+                          )
+                        : ListView.separated(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            padding: const EdgeInsets.all(16),
+                            itemCount: result.items.length,
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(height: 8),
+                            itemBuilder: (context, index) {
+                              final item = result.items[index];
+                              return Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: widget.buildCardBody(
+                                          context,
+                                          item,
+                                        ),
                                       ),
-                                    ),
-                                    PopupMenuButton<GridAction<T>>(
-                                      icon: const Icon(Icons.more_vert),
-                                      tooltip: 'Acciones',
-                                      onSelected: (GridAction<T> action) =>
-                                          _runAction(action, item),
-                                      itemBuilder: (context) =>
-                                          _visibleActions(ref, item)
-                                              .map(
-                                                (GridAction<T> a) =>
-                                                    PopupMenuItem<
-                                                      GridAction<T>
-                                                    >(
-                                                      value: a,
-                                                      child: Row(
-                                                        children: [
-                                                          Icon(
-                                                            a.icon,
-                                                            size: 20,
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 12,
-                                                          ),
-                                                          Text(a.label),
-                                                        ],
+                                      PopupMenuButton<GridAction<T>>(
+                                        icon: const Icon(Icons.more_vert),
+                                        tooltip: 'Acciones',
+                                        onSelected: (GridAction<T> action) =>
+                                            _runAction(action, item),
+                                        itemBuilder: (context) =>
+                                            _visibleActions(ref, item)
+                                                .map(
+                                                  (GridAction<T> a) =>
+                                                      PopupMenuItem<
+                                                        GridAction<T>
+                                                      >(
+                                                        value: a,
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(
+                                                              a.icon,
+                                                              size: 20,
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 12,
+                                                            ),
+                                                            Text(a.label),
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                              )
-                                              .toList(),
-                                    ),
-                                  ],
+                                                )
+                                                .toList(),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
+                              );
+                            },
+                          ),
+                  ),
                 ),
-              ),
-              _PaginationBar(
-                currentPage: result.currentPage,
-                lastPage: result.lastPage,
-                total: result.total,
-                onPageChanged: _goToPage,
-              ),
-            ],
-          );
-        },
+                _PaginationBar(
+                  currentPage: result.currentPage,
+                  lastPage: result.lastPage,
+                  total: result.total,
+                  onPageChanged: _goToPage,
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

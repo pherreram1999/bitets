@@ -5,7 +5,6 @@ import '../../../grid/domain/entities/grid_action.dart';
 import '../../../grid/domain/entities/laravel_resource_controller.dart';
 import '../../../grid/domain/entities/paginated_result.dart';
 import '../../../grid/domain/repositories/grid_repository.dart';
-import '../../../grid/presentation/actions/create_action.dart';
 import '../../../grid/presentation/actions/delete_action.dart';
 import '../../../grid/presentation/actions/edit_action.dart';
 import '../../../grid/presentation/actions/view_action.dart';
@@ -33,7 +32,6 @@ class SalonesGridPage extends GridPage<Salon> {
 
   @override
   List<GridAction<Salon>> get actions => const [
-    CreateAction<Salon>(),
     ViewAction<Salon>(),
     EditAction<Salon>(),
     DeleteAction<Salon>(),

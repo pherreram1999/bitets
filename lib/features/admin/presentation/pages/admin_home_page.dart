@@ -143,7 +143,7 @@ class _AdminHomePageState extends ConsumerState<AdminHomePage> {
         currentIndex: _currentIndex,
         onSelect: _selectPage,
       ),
-      body: _pages[_currentIndex],
+      body: SafeArea(top: false, child: _pages[_currentIndex]),
     );
   }
 }

@@ -852,10 +852,6 @@ Cuando extiendes `GridPage<T>`, la base se ocupa de:
     Antes de cualquier acción con `requiresConfirmation == true`
     muestra un `AlertDialog` (Cancelar / Confirmar).
   ],
-  [Botón crear], [
-    Si la lista de acciones incluye un `CreateAction<T>`, aparece
-    un `IconButton(icon: Icons.add)` en el `AppBar`.
-  ],
   [Estados loading/error], [
     `state.when(loading, error, data)` muestra spinner, mensaje
     rojo, o la lista (o "Sin resultados" si está vacía).
@@ -959,7 +955,6 @@ cada acción es una clase. La base tiene cuatro:
   }
 ")
 
-- `CreateAction<T>`: empuja un form vacío.
 - `ViewAction<T>`: empuja el form en modo read-only.
 - `EditAction<T>`: empuja el form con datos prellenos.
 - `DeleteAction<T>`: borra y devuelve `true` para refrescar.

@@ -8,23 +8,25 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(
-              'assets/logo.webp',
-              height: 160,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, _) => Icon(
-                Icons.school,
-                size: 64,
-                color: Theme.of(context).colorScheme.primary,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                'assets/logo.webp',
+                height: 160,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, _) => Icon(
+                  Icons.school,
+                  size: 64,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
-            ),
-            const SizedBox(height: 32),
-            const CircularProgressIndicator(),
-          ],
+              const SizedBox(height: 32),
+              const CircularProgressIndicator(),
+            ],
+          ),
         ),
       ),
     );

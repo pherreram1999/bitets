@@ -95,128 +95,131 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Perfil')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 32),
-            CircleAvatar(
-              radius: 50,
-              child: Text(
-                user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                style: const TextStyle(fontSize: 40),
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 32),
+              CircleAvatar(
+                radius: 50,
+                child: Text(
+                  user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                  style: const TextStyle(fontSize: 40),
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              user.name,
-              style: Theme.of(context).textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              user.email,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if (user.identificador != null) ...[
-              const SizedBox(height: 4),
+              const SizedBox(height: 24),
               Text(
-                'Boleta: ${user.identificador}',
+                user.name,
+                style: Theme.of(context).textTheme.headlineSmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                user.email,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),
-            ],
-            const SizedBox(height: 4),
-            Text(
-              'Rol: ${user.rol}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+              if (user.identificador != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  'Boleta: ${user.identificador}',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              const SizedBox(height: 4),
+              Text(
+                'Rol: ${user.rol}',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 48),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.fingerprint, color: colorScheme.primary),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            'Autenticación biométrica',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _biometricEnabled == true
-                          ? 'Activada. Usa tu huella o rostro para desbloquear la app.'
-                          : 'Desbloquea la app rápidamente con tu huella digital o reconocimiento facial.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    if (_biometricEnabled == false)
-                      FilledButton.icon(
-                        onPressed: _loading ? null : _enableBiometrics,
-                        icon: _loading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.fingerprint),
-                        label: const Text('Activar biometría'),
-                      ),
-                    if (_biometricEnabled == true)
+              const SizedBox(height: 48),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Row(
                         children: [
-                          Icon(
-                            Icons.check_circle,
-                            color: colorScheme.primary,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Biometría activada',
-                            style: TextStyle(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.w500,
+                          Icon(Icons.fingerprint, color: colorScheme.primary),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              'Autenticación biométrica',
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                           ),
                         ],
                       ),
-                  ],
+                      const SizedBox(height: 8),
+                      Text(
+                        _biometricEnabled == true
+                            ? 'Activada. Usa tu huella o rostro para desbloquear la app.'
+                            : 'Desbloquea la app rápidamente con tu huella digital o reconocimiento facial.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      if (_biometricEnabled == false)
+                        FilledButton.icon(
+                          onPressed: _loading ? null : _enableBiometrics,
+                          icon: _loading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.fingerprint),
+                          label: const Text('Activar biometría'),
+                        ),
+                      if (_biometricEnabled == true)
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: colorScheme.primary,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Biometría activada',
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 24),
-            OutlinedButton.icon(
-              onPressed: _confirmLogout,
-              icon: const Icon(Icons.logout),
-              label: const Text('Cerrar sesión'),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: colorScheme.error,
-                side: BorderSide(color: colorScheme.error),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+              const SizedBox(height: 24),
+              OutlinedButton.icon(
+                onPressed: _confirmLogout,
+                icon: const Icon(Icons.logout),
+                label: const Text('Cerrar sesión'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: colorScheme.error,
+                  side: BorderSide(color: colorScheme.error),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

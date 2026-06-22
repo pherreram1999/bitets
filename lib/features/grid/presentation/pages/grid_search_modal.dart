@@ -45,7 +45,7 @@ class _GridSearchModal<T extends HasId> extends StatelessWidget {
             const SizedBox(width: 8),
           ],
         ),
-        body: search,
+        body: SafeArea(top: false, child: search),
       ),
     );
   }
