@@ -69,6 +69,12 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
     }
   }
 
+  Future<void> _openCreate() async {
+    final create = widget.createAction;
+    if (create == null) return;
+    await _runAction(create, null);
+  }
+
   Future<void> _openSearch() async {
     final currentFilters = widget.currentFilters(ref);
     final result = await showGridSearch<T>(
@@ -116,6 +122,12 @@ class GridState<T extends HasId> extends ConsumerState<GridPage<T>> {
         actions: [
           ?_buildSearchAction(),
           ...widget.extraAppBarActions(context, ref),
+          if (widget.createAction != null && _isAdmin(ref))
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: 'Crear',
+              onPressed: _openCreate,
+            ),
         ],
       ),
       body: SafeArea(

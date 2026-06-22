@@ -37,14 +37,25 @@ class NotificacionExamen extends Table {
   DateTimeColumn get createdAt => dateTime()();
 }
 
-@DriftDatabase(tables: [ExamenesCache, UserCache, NotificacionExamen])
+class MapaCache extends Table {
+  IntColumn get id => integer()();
+  TextColumn get payload => text()();
+  DateTimeColumn get cachedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DriftDatabase(
+  tables: [ExamenesCache, UserCache, NotificacionExamen, MapaCache],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
   AppDatabase.defaults() : super(driftDatabase(name: 'bitets_cache'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -52,6 +63,9 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (m, from, to) async {
       if (from < 2) {
         await m.createTable(notificacionExamen);
+      }
+      if (from < 3) {
+        await m.createTable(mapaCache);
       }
     },
   );

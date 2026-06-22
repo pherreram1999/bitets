@@ -4,6 +4,7 @@ import '../../../grid/domain/entities/grid_action.dart';
 import '../../../grid/domain/entities/laravel_resource_controller.dart';
 import '../../../grid/domain/entities/paginated_result.dart';
 import '../../../grid/domain/repositories/grid_repository.dart';
+import '../../../grid/presentation/actions/create_action.dart';
 import '../../../grid/presentation/actions/delete_action.dart';
 import '../../../grid/presentation/actions/edit_action.dart';
 import '../../../grid/presentation/actions/view_action.dart';
@@ -35,6 +36,10 @@ class PlanesEstudioGridPage extends GridPage<PlanEstudio> {
     EditAction<PlanEstudio>(),
     DeleteAction<PlanEstudio>(),
   ];
+
+  @override
+  GridAction<PlanEstudio>? get createAction =>
+      const CreateAction<PlanEstudio>();
 
   @override
   GridFormBuilder<PlanEstudio> get formBuilder =>

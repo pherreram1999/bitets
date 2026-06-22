@@ -53,7 +53,7 @@ Use **Riverpod** (`flutter_riverpod` + `riverpod_annotation`). Prefer `@riverpod
 
 ### API endpoint
 
-The backend base URL is resolved in `lib/main.dart::_resolveEndpoint()` (default `http://127.0.0.1:8000/api/v1`). It can be overridden at build time with `--dart-define=API_BASE_URL=https://...`. The `DioClient` singleton reads this base URL and adds the `AuthInterceptor` once (in `Auth.build()`). All HTTP features must go through `DioClient.instance` and never re-register the interceptor. Per-resource endpoint paths live in `LaravelResourceController(basePath)` (e.g. `'/areas'`, `'/profesores'`), NOT inline in datasources.
+The backend base URL is resolved in `lib/main.dart::_resolveEndpoint()`, which returns the production endpoint `https://saets.nullpointer.us.kg/api/v1`. `main()` calls `DioClient.updateBaseUrl(...)` with that value before `runApp`, which syncs `ApiConstants.baseUrl` and the singleton `Dio` instance's `options.baseUrl`. There is no `--dart-define` override anymore — to switch to a local backend, edit `_resolveEndpoint()` (or `ApiConstants.baseUrl` directly). The `DioClient` singleton adds the `AuthInterceptor` once (in `Auth.build()`). All HTTP features must go through `DioClient.instance` and never re-register the interceptor. Per-resource endpoint paths live in `LaravelResourceController(basePath)` (e.g. `'/areas'`, `'/profesores'`), NOT inline in datasources.
 
 ## Working with grids (catalogos)
 
@@ -503,8 +503,9 @@ User pulls down
 ```
 
 #### Create
-There is no built-in create action anymore. Catalogs that need to create items can add a custom `GridAction<T>` that pushes the form via `formBuilder(endpoint: controller.create(), item: null, readOnly: false)` and returns `true` to refresh.
-  -> state calls widget.onActionCompleted(ref) -> ref.invalidate(fooGridProvider)
+`CreateAction<T>` (`lib/features/grid/presentation/actions/create_action.dart`) is exposed via the optional `GridAction<T>? get createAction => null;` getter on `GridPage`, NOT via the `actions` list. `GridState` renders an `IconButton(Icons.add)` in the `AppBar` when `widget.createAction != null && _isAdmin(ref)`, and calls `_runAction(createAction, null)`. Because it lives outside `actions`, it never appears in the per-row popup menu (which would pass a non-null `item` and trip `CreateAction`'s `ArgumentError`). Admin grids override `createAction => const CreateAction<T>()`; the two `alumno_*` grids leave the default `null`.
+  -> formBuilder(endpoint: controller.create(), item: null, readOnly: false)
+  -> returns true -> widget.onActionCompleted(ref) -> ref.invalidate(fooGridProvider)
   -> provider rebuilds, grid refreshes
 ```
 

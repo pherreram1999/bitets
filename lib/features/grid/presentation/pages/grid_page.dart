@@ -16,6 +16,7 @@ abstract class GridPage<T extends HasId> extends ConsumerStatefulWidget {
   GridRepository<T> get repository;
   LaravelResourceController get controller;
   List<GridAction<T>> get actions;
+  GridAction<T>? get createAction => null;
   GridFormBuilder<T> get formBuilder;
   GridSearch<T> buildSearch(
     BuildContext context,

@@ -1224,6 +1224,253 @@ class NotificacionExamenCompanion
   }
 }
 
+class $MapaCacheTable extends MapaCache
+    with TableInfo<$MapaCacheTable, MapaCacheData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MapaCacheTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _payloadMeta = const VerificationMeta(
+    'payload',
+  );
+  @override
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+    'payload',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cachedAtMeta = const VerificationMeta(
+    'cachedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> cachedAt = GeneratedColumn<DateTime>(
+    'cached_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, payload, cachedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'mapa_cache';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MapaCacheData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('payload')) {
+      context.handle(
+        _payloadMeta,
+        payload.isAcceptableOrUnknown(data['payload']!, _payloadMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadMeta);
+    }
+    if (data.containsKey('cached_at')) {
+      context.handle(
+        _cachedAtMeta,
+        cachedAt.isAcceptableOrUnknown(data['cached_at']!, _cachedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_cachedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MapaCacheData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MapaCacheData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      payload: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload'],
+      )!,
+      cachedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}cached_at'],
+      )!,
+    );
+  }
+
+  @override
+  $MapaCacheTable createAlias(String alias) {
+    return $MapaCacheTable(attachedDatabase, alias);
+  }
+}
+
+class MapaCacheData extends DataClass implements Insertable<MapaCacheData> {
+  final int id;
+  final String payload;
+  final DateTime cachedAt;
+  const MapaCacheData({
+    required this.id,
+    required this.payload,
+    required this.cachedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['payload'] = Variable<String>(payload);
+    map['cached_at'] = Variable<DateTime>(cachedAt);
+    return map;
+  }
+
+  MapaCacheCompanion toCompanion(bool nullToAbsent) {
+    return MapaCacheCompanion(
+      id: Value(id),
+      payload: Value(payload),
+      cachedAt: Value(cachedAt),
+    );
+  }
+
+  factory MapaCacheData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MapaCacheData(
+      id: serializer.fromJson<int>(json['id']),
+      payload: serializer.fromJson<String>(json['payload']),
+      cachedAt: serializer.fromJson<DateTime>(json['cachedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'payload': serializer.toJson<String>(payload),
+      'cachedAt': serializer.toJson<DateTime>(cachedAt),
+    };
+  }
+
+  MapaCacheData copyWith({int? id, String? payload, DateTime? cachedAt}) =>
+      MapaCacheData(
+        id: id ?? this.id,
+        payload: payload ?? this.payload,
+        cachedAt: cachedAt ?? this.cachedAt,
+      );
+  MapaCacheData copyWithCompanion(MapaCacheCompanion data) {
+    return MapaCacheData(
+      id: data.id.present ? data.id.value : this.id,
+      payload: data.payload.present ? data.payload.value : this.payload,
+      cachedAt: data.cachedAt.present ? data.cachedAt.value : this.cachedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MapaCacheData(')
+          ..write('id: $id, ')
+          ..write('payload: $payload, ')
+          ..write('cachedAt: $cachedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, payload, cachedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MapaCacheData &&
+          other.id == this.id &&
+          other.payload == this.payload &&
+          other.cachedAt == this.cachedAt);
+}
+
+class MapaCacheCompanion extends UpdateCompanion<MapaCacheData> {
+  final Value<int> id;
+  final Value<String> payload;
+  final Value<DateTime> cachedAt;
+  const MapaCacheCompanion({
+    this.id = const Value.absent(),
+    this.payload = const Value.absent(),
+    this.cachedAt = const Value.absent(),
+  });
+  MapaCacheCompanion.insert({
+    this.id = const Value.absent(),
+    required String payload,
+    required DateTime cachedAt,
+  }) : payload = Value(payload),
+       cachedAt = Value(cachedAt);
+  static Insertable<MapaCacheData> custom({
+    Expression<int>? id,
+    Expression<String>? payload,
+    Expression<DateTime>? cachedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (payload != null) 'payload': payload,
+      if (cachedAt != null) 'cached_at': cachedAt,
+    });
+  }
+
+  MapaCacheCompanion copyWith({
+    Value<int>? id,
+    Value<String>? payload,
+    Value<DateTime>? cachedAt,
+  }) {
+    return MapaCacheCompanion(
+      id: id ?? this.id,
+      payload: payload ?? this.payload,
+      cachedAt: cachedAt ?? this.cachedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (payload.present) {
+      map['payload'] = Variable<String>(payload.value);
+    }
+    if (cachedAt.present) {
+      map['cached_at'] = Variable<DateTime>(cachedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MapaCacheCompanion(')
+          ..write('id: $id, ')
+          ..write('payload: $payload, ')
+          ..write('cachedAt: $cachedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1231,6 +1478,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $UserCacheTable userCache = $UserCacheTable(this);
   late final $NotificacionExamenTable notificacionExamen =
       $NotificacionExamenTable(this);
+  late final $MapaCacheTable mapaCache = $MapaCacheTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1239,6 +1487,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     examenesCache,
     userCache,
     notificacionExamen,
+    mapaCache,
   ];
 }
 
@@ -1906,6 +2155,162 @@ typedef $$NotificacionExamenTableProcessedTableManager =
       NotificacionExamenData,
       PrefetchHooks Function()
     >;
+typedef $$MapaCacheTableCreateCompanionBuilder =
+    MapaCacheCompanion Function({
+      Value<int> id,
+      required String payload,
+      required DateTime cachedAt,
+    });
+typedef $$MapaCacheTableUpdateCompanionBuilder =
+    MapaCacheCompanion Function({
+      Value<int> id,
+      Value<String> payload,
+      Value<DateTime> cachedAt,
+    });
+
+class $$MapaCacheTableFilterComposer
+    extends Composer<_$AppDatabase, $MapaCacheTable> {
+  $$MapaCacheTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MapaCacheTableOrderingComposer
+    extends Composer<_$AppDatabase, $MapaCacheTable> {
+  $$MapaCacheTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payload => $composableBuilder(
+    column: $table.payload,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get cachedAt => $composableBuilder(
+    column: $table.cachedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MapaCacheTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MapaCacheTable> {
+  $$MapaCacheTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get payload =>
+      $composableBuilder(column: $table.payload, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get cachedAt =>
+      $composableBuilder(column: $table.cachedAt, builder: (column) => column);
+}
+
+class $$MapaCacheTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MapaCacheTable,
+          MapaCacheData,
+          $$MapaCacheTableFilterComposer,
+          $$MapaCacheTableOrderingComposer,
+          $$MapaCacheTableAnnotationComposer,
+          $$MapaCacheTableCreateCompanionBuilder,
+          $$MapaCacheTableUpdateCompanionBuilder,
+          (
+            MapaCacheData,
+            BaseReferences<_$AppDatabase, $MapaCacheTable, MapaCacheData>,
+          ),
+          MapaCacheData,
+          PrefetchHooks Function()
+        > {
+  $$MapaCacheTableTableManager(_$AppDatabase db, $MapaCacheTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MapaCacheTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MapaCacheTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MapaCacheTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> payload = const Value.absent(),
+                Value<DateTime> cachedAt = const Value.absent(),
+              }) => MapaCacheCompanion(
+                id: id,
+                payload: payload,
+                cachedAt: cachedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String payload,
+                required DateTime cachedAt,
+              }) => MapaCacheCompanion.insert(
+                id: id,
+                payload: payload,
+                cachedAt: cachedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MapaCacheTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MapaCacheTable,
+      MapaCacheData,
+      $$MapaCacheTableFilterComposer,
+      $$MapaCacheTableOrderingComposer,
+      $$MapaCacheTableAnnotationComposer,
+      $$MapaCacheTableCreateCompanionBuilder,
+      $$MapaCacheTableUpdateCompanionBuilder,
+      (
+        MapaCacheData,
+        BaseReferences<_$AppDatabase, $MapaCacheTable, MapaCacheData>,
+      ),
+      MapaCacheData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -1916,4 +2321,6 @@ class $AppDatabaseManager {
       $$UserCacheTableTableManager(_db, _db.userCache);
   $$NotificacionExamenTableTableManager get notificacionExamen =>
       $$NotificacionExamenTableTableManager(_db, _db.notificacionExamen);
+  $$MapaCacheTableTableManager get mapaCache =>
+      $$MapaCacheTableTableManager(_db, _db.mapaCache);
 }

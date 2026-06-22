@@ -99,7 +99,7 @@ class AlumnoExamenesGridPage extends GridPage<Examen> {
           children: [
             Expanded(
               child: Text(
-                item.descripcion,
+                unidad?.nombre ?? item.descripcion,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -129,10 +129,10 @@ class AlumnoExamenesGridPage extends GridPage<Examen> {
             ],
           ],
         ),
-        if (unidad != null) ...[
+        if (unidad != null && item.descripcion.isNotEmpty) ...[
           const SizedBox(height: 2),
           Text(
-            unidad.nombre,
+            item.descripcion,
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: colorScheme.primary),

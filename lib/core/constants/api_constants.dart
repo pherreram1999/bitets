@@ -18,4 +18,5 @@ class ApiConstants {
   static const String chartExamenesPorCarrera = '/charts/examenes-por-carrera';
   static const String chartInscritosPorMateria =
       '/charts/inscritos-por-materia';
+  static const String mapaCanvas = '/mapa/canvas';
 }

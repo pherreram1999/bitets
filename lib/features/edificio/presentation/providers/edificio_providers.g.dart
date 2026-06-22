@@ -247,3 +247,92 @@ abstract class _$EdificiosFilters extends $Notifier<Map<String, dynamic>> {
     return element.handleCreate(ref, build);
   }
 }
+
+@ProviderFor(EdificioByNumero)
+final edificioByNumeroProvider = EdificioByNumeroFamily._();
+
+final class EdificioByNumeroProvider
+    extends $AsyncNotifierProvider<EdificioByNumero, Edificio?> {
+  EdificioByNumeroProvider._({
+    required EdificioByNumeroFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'edificioByNumeroProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$edificioByNumeroHash();
+
+  @override
+  String toString() {
+    return r'edificioByNumeroProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  EdificioByNumero create() => EdificioByNumero();
+
+  @override
+  bool operator ==(Object other) {
+    return other is EdificioByNumeroProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$edificioByNumeroHash() => r'da698ebe6b907e330b90bcb96a8f61d84b095c22';
+
+final class EdificioByNumeroFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          EdificioByNumero,
+          AsyncValue<Edificio?>,
+          Edificio?,
+          FutureOr<Edificio?>,
+          int
+        > {
+  EdificioByNumeroFamily._()
+    : super(
+        retry: null,
+        name: r'edificioByNumeroProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  EdificioByNumeroProvider call(int numero) =>
+      EdificioByNumeroProvider._(argument: numero, from: this);
+
+  @override
+  String toString() => r'edificioByNumeroProvider';
+}
+
+abstract class _$EdificioByNumero extends $AsyncNotifier<Edificio?> {
+  late final _$args = ref.$arg as int;
+  int get numero => _$args;
+
+  FutureOr<Edificio?> build(int numero);
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<AsyncValue<Edificio?>, Edificio?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AsyncValue<Edificio?>, Edificio?>,
+              AsyncValue<Edificio?>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, () => build(_$args));
+  }
+}

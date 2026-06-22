@@ -4,6 +4,7 @@ import '../../../grid/domain/entities/grid_action.dart';
 import '../../../grid/domain/entities/laravel_resource_controller.dart';
 import '../../../grid/domain/entities/paginated_result.dart';
 import '../../../grid/domain/repositories/grid_repository.dart';
+import '../../../grid/presentation/actions/create_action.dart';
 import '../../../grid/presentation/actions/delete_action.dart';
 import '../../../grid/presentation/actions/edit_action.dart';
 import '../../../grid/presentation/actions/view_action.dart';
@@ -41,6 +42,9 @@ class ExamenesGridPage extends GridPage<Examen> {
     ToggleActiveExamenAction(),
     DeleteAction<Examen>(),
   ];
+
+  @override
+  GridAction<Examen>? get createAction => const CreateAction<Examen>();
 
   @override
   GridFormBuilder<Examen> get formBuilder =>
@@ -98,7 +102,7 @@ class ExamenesGridPage extends GridPage<Examen> {
           children: [
             Expanded(
               child: Text(
-                item.descripcion,
+                unidad?.nombre ?? item.descripcion,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -128,10 +132,10 @@ class ExamenesGridPage extends GridPage<Examen> {
             ],
           ],
         ),
-        if (unidad != null) ...[
+        if (unidad != null && item.descripcion.isNotEmpty) ...[
           const SizedBox(height: 2),
           Text(
-            unidad.nombre,
+            item.descripcion,
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: colorScheme.primary),

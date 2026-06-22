@@ -128,6 +128,10 @@ class ExamenesLocalDatasource {
     'nombre': s.nombre,
     'edificio_id': s.edificioId,
     if (s.edificio != null)
-      'edificio': {'id': s.edificio!.id, 'nombre': s.edificio!.nombre},
+      'edificio': {
+        'id': s.edificio!.id,
+        'numero': s.edificio!.numero,
+        'nombre': s.edificio!.nombre,
+      },
   };
 }

@@ -171,7 +171,10 @@ class _ExamenDetailsPageState extends ConsumerState<ExamenDetailsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(examen.descripcion, style: textTheme.headlineSmall),
+              Text(
+                unidad?.nombre ?? examen.descripcion,
+                style: textTheme.headlineSmall,
+              ),
               const SizedBox(height: 12),
               _DetailRow(
                 icon: Icons.event,

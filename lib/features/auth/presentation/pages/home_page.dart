@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../examen/presentation/pages/alumno_catalogo_examenes_grid_page.dart';
 import '../../../examen/presentation/pages/alumno_examenes_grid_page.dart';
+import '../../../mapa/presentation/pages/mapa_institucion_page.dart';
 import 'profile_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -17,6 +18,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   static const List<Widget> _pages = [
     AlumnoExamenesGridPage(),
     AlumnoCatalogoExamenesGridPage(),
+    MapaInstitucionPage(),
   ];
 
   void _openProfile() {
@@ -70,6 +72,11 @@ class _HomePageState extends ConsumerState<HomePage> {
             icon: Icon(Icons.menu_book_outlined),
             selectedIcon: Icon(Icons.menu_book),
             label: 'Disponibles',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.map_outlined),
+            selectedIcon: Icon(Icons.map),
+            label: 'Mapa',
           ),
         ],
       ),

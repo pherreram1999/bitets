@@ -63,3 +63,15 @@ class EdificiosFilters extends _$EdificiosFilters {
 
   void apply(Map<String, dynamic> filters) => state = filters;
 }
+
+@riverpod
+class EdificioByNumero extends _$EdificioByNumero {
+  @override
+  Future<Edificio?> build(int numero) async {
+    if (numero == 0) return null;
+    final result = await ref
+        .read(edificioRepositoryProvider)
+        .fetchPage(1, query: {'numero': numero, 'per_page': 1});
+    return result.items.isEmpty ? null : result.items.first;
+  }
+}

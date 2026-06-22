@@ -27,13 +27,7 @@ Use `dart run build_runner watch --delete-conflicting-outputs` while iterating. 
 
 ## API endpoint configuration
 
-`lib/core/constants/api_constants.dart` reads the base URL from a compile-time define:
-
-```bash
-flutter run --dart-define=API_BASE_URL=https://api.example.com/v1
-```
-
-Default is `http://bitets.test/api/v1` (local). Endpoint paths (`/auth/login`, `/auth/register`, `/auth/me`, `/auth/logout`) are constants in that same file — add new endpoints there, not inline in datasources.
+The base URL is hardcoded to production (`https://saets.nullpointer.us.kg/api/v1`) in two places: `lib/main.dart::_resolveEndpoint()` and `lib/core/constants/api_constants.dart` (`static String baseUrl`). `main()` calls `DioClient.updateBaseUrl(...)` before `runApp` to sync both. There is no `--dart-define=API_BASE_URL` override anymore — to switch to a local backend, edit `_resolveEndpoint()`. Endpoint paths (`/auth/login`, `/auth/register`, `/auth/me`, `/auth/logout`) are constants in `api_constants.dart` — add new endpoints there, not inline in datasources.
 
 ## Auth wiring (read this before touching auth code)
 
